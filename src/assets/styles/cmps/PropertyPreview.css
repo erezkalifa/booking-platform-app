@@ -1,22 +1,27 @@
 /* Property Preview */
 .property-preview {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
   color: inherit;
-  display: block;
-  width: 100%;
-  transition: transform 0.2s ease;
+  height: 100%;
 }
 
 .property-preview:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .property-preview-image {
   position: relative;
   width: 100%;
-  height: 0;
-  padding-bottom: 100%;
-  margin-bottom: 16px;
+  padding-top: 66.67%; /* 3:2 aspect ratio */
+  overflow: hidden;
 }
 
 .property-preview-image img {
@@ -26,7 +31,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px;
   transition: transform 0.3s ease;
 }
 
@@ -34,6 +38,7 @@
   transform: scale(1.05);
 }
 
+/* Wishlist button */
 .wishlist-button {
   position: absolute;
   top: 12px;
@@ -72,7 +77,6 @@
   color: white;
 }
 
-/* Add animation for the heart */
 @keyframes heartPop {
   0% {
     transform: scale(1);
@@ -85,78 +89,74 @@
   }
 }
 
-.property-preview-details {
-  padding: 0;
+.property-preview-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 1.5rem;
+  gap: 1rem;
 }
 
-.property-preview-details h3 {
-  margin: 0 0 8px 0;
-  font-size: 1.1rem;
+.property-preview-header {
+  margin-bottom: 0.5rem;
+}
+
+.property-preview-title {
+  font-size: 1.25rem;
   font-weight: 600;
+  margin: 0 0 0.5rem;
   color: #333;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .property-preview-price {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  margin-top: auto;
+  text-align: right;
 }
 
-.price {
-  font-size: 1.1rem;
-  font-weight: 600;
+.property-preview-price .price {
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #333;
+  display: block;
 }
 
-.price-details {
+.property-preview-price .price-details {
   font-size: 0.9rem;
   color: #666;
+  margin-top: 0.25rem;
 }
 
-.cleaning-fee {
+.property-preview-price .cleaning-fee {
   font-size: 0.85rem;
   color: #666;
+  margin-top: 0.25rem;
 }
 
-.amenities-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1399px) {
-  .property-preview-image {
-    padding-bottom: 95%;
-  }
-}
-
-@media (max-width: 1100px) {
-  .property-preview-image {
-    padding-bottom: 90%;
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .property-preview-content {
+    padding: 1.25rem;
   }
 
-  .property-preview-details h3 {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 767px) {
-  .property-preview-image {
-    padding-bottom: 75%;
-  }
-
-  .property-preview-details {
-    padding: 0;
-  }
-
-  .property-preview-details h3 {
+  .property-preview-title {
     font-size: 1.1rem;
+  }
+
+  .property-preview-price .price {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .property-preview-image {
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+  }
+
+  .property-preview-content {
+    padding: 1rem;
   }
 }

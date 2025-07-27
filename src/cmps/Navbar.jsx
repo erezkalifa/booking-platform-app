@@ -1,15 +1,11 @@
 import { Link } from "react-router-dom";
-import { useError } from "./ErrorContainer";
+import { showErrorMsg } from "../services/event-bus.service";
 
 export function Navbar() {
-  const { showError } = useError();
-
   const handleLogin = () => {
-    showError({
-      message:
-        "🔒 Login is currently unavailable. We're working on implementing this feature. Please try again later!",
-      type: "Authentication",
-    });
+    showErrorMsg(
+      "Login functionality is not implemented yet. Please try again later!"
+    );
   };
 
   return (

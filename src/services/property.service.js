@@ -180,7 +180,7 @@ async function getRegions() {
   }
 }
 
-async function getPricing(id, checkIn, checkOut, guestsCount) {
+async function getPricing(id, checkIn, checkOut, guestsCount, retryCount = 0) {
   try {
     const response = await api.get(`/listings/${id}/pricing`, {
       params: {
@@ -188,14 +188,6 @@ async function getPricing(id, checkIn, checkOut, guestsCount) {
         check_out: checkOut,
         guests_count: guestsCount,
       },
-    });
-
-    // Log the raw response for debugging
-    console.log(`Pricing API Response for property ${id}:`, {
-      status: response.status,
-      statusText: response.statusText,
-      data: response.data,
-      info: response.data?.info,
     });
 
     // Check if we have valid data
@@ -210,6 +202,14 @@ async function getPricing(id, checkIn, checkOut, guestsCount) {
       total: response.data.info?.total || 0,
     };
   } catch (err) {
+    // If we haven't exceeded max retries and it's a network error, retry
+    if (retryCount < 2 && (!err.response || err.code === "ECONNABORTED")) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 * (retryCount + 1))
+      ); // Exponential backoff
+      return getPricing(id, checkIn, checkOut, guestsCount, retryCount + 1);
+    }
+
     console.error(`Pricing API Error for property ${id}:`, {
       error: err,
       message: err.message,

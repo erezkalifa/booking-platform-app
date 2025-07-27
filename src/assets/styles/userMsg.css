@@ -1,0 +1,106 @@
+.user-msg {
+  background-color: #ffffff;
+  color: #222222;
+  padding: 16px 24px;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  transform: none;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 320px;
+  max-width: 450px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.43;
+  font-family: "Circular", -apple-system, BlinkMacSystemFont, Roboto,
+    "Helvetica Neue", sans-serif;
+  z-index: 2000;
+  animation: slideIn 0.3s ease forwards;
+  border: 1px solid #dddddd;
+}
+
+.user-msg p {
+  margin: 0;
+  flex-grow: 1;
+}
+
+.user-msg.success {
+  border-left: 4px solid #00a699;
+}
+
+.user-msg.success::before {
+  content: "✓";
+  font-size: 16px;
+  margin-right: 8px;
+  color: #00a699;
+}
+
+.user-msg.error {
+  border-left: 4px solid #ff5a5f;
+}
+
+.user-msg.error::before {
+  content: "!";
+  font-size: 16px;
+  margin-right: 8px;
+  font-weight: bold;
+  color: #ff5a5f;
+}
+
+.user-msg button {
+  background: none;
+  border: none;
+  color: #717171;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.user-msg button:hover {
+  opacity: 1;
+  background-color: #f7f7f7;
+}
+
+.user-msg button::before {
+  content: "×";
+  font-size: 20px;
+  line-height: 1;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.user-msg.hide {
+  animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}

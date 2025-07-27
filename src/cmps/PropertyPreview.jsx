@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { propertyService } from "../services/property.service";
 import { getErrorMessage } from "../utils/api.utils";
 
-export function PropertyPreview({ property }) {
+export function PropertyPreview({ property, onPriceLoadingChange }) {
   const [pricing, setPricing] = useState(null);
-  const [isLoadingPrice, setIsLoadingPrice] = useState(true);
+  const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [priceError, setPriceError] = useState(null);
+  const loadingRef = useRef(false);
 
   const {
     id,
@@ -21,13 +22,14 @@ export function PropertyPreview({ property }) {
     type,
   } = property;
 
-  useEffect(() => {
-    loadPricing();
-  }, [id]);
+  const loadPricing = useCallback(async () => {
+    // Prevent multiple simultaneous loads
+    if (loadingRef.current || pricing) return;
 
-  async function loadPricing() {
     try {
+      loadingRef.current = true;
       setIsLoadingPrice(true);
+      if (onPriceLoadingChange) onPriceLoadingChange(true);
       setPriceError(null);
 
       const { checkIn, checkOut } = propertyService.getDefaultDates();
@@ -43,9 +45,23 @@ export function PropertyPreview({ property }) {
       setPriceError(getErrorMessage(err));
       setPricing(null);
     } finally {
+      loadingRef.current = false;
       setIsLoadingPrice(false);
+      if (onPriceLoadingChange) onPriceLoadingChange(false);
     }
-  }
+  }, [id, onPriceLoadingChange]);
+
+  // Load pricing only once when component mounts
+  useEffect(() => {
+    loadPricing();
+  }, []);
+
+  // Reset pricing when property changes
+  useEffect(() => {
+    setPricing(null);
+    setPriceError(null);
+    loadPricing();
+  }, [id]);
 
   // Get the first image URL safely
   const getImageUrl = (image) => {

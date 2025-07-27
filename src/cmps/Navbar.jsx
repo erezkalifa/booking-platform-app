@@ -85,7 +85,7 @@ export function Navbar() {
                   {wishlistService.getWishlist().length}
                 </span>
               </button>
-              <button className="menu-item" onClick={handleLoginClick}>
+              <button className="menu-item disabled" disabled>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"

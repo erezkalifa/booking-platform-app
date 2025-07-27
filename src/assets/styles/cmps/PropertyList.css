@@ -1,86 +1,182 @@
 /* Property List Component */
 .property-list {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 24px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  padding: 1rem 0;
+  gap: 24px;
+  /* Start with one column on mobile */
+  grid-template-columns: minmax(280px, 1fr);
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+  .property-list {
+    grid-template-columns: repeat(2, minmax(360px, 1fr));
+  }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1200px) {
+  .property-list {
+    grid-template-columns: repeat(3, minmax(360px, 1fr));
+  }
 }
 
 .loading-more {
   grid-column: 1 / -1;
   display: flex;
   justify-content: center;
-  padding: 2rem 0;
+  padding: 24px;
 }
 
-.loader {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--background-color);
-  border-top: 3px solid var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .property-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .property-list {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-}
-
-/* Property Card */
-.property-card {
-  background: var(--background-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+/* PropertyPreview styles */
+.property-preview {
+  display: block !important;
+  text-decoration: none;
+  color: inherit;
+  background: white;
+  border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: auto !important;
 }
 
-.property-card:hover {
+.property-preview:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.property-card img {
+.property-preview-image {
+  position: relative;
+  padding-bottom: 45% !important; /* Even wider ratio */
+  overflow: hidden;
+  height: auto !important;
+}
+
+.property-preview-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 200px;
+  height: 100% !important;
   object-fit: cover;
 }
 
-.property-card-content {
-  padding: var(--spacing-medium);
+.property-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
 }
 
-.property-card h3 {
-  font-size: 18px;
-  margin-bottom: var(--spacing-small);
+.property-preview-content {
+  padding: 12px !important;
 }
 
-.property-card .price {
-  color: var(--primary-color);
+.property-preview-header {
+  margin-bottom: 8px !important;
+}
+
+.property-preview-title {
+  font-size: 16px !important;
   font-weight: 600;
-  font-size: 20px;
+  color: #333;
+  margin-bottom: 4px !important;
+  line-height: 1.3;
+  /* Prevent long titles from breaking layout */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.property-card .location {
-  color: var(--text-secondary);
-  font-size: 14px;
-  margin-bottom: var(--spacing-small);
+.property-preview-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+  font-size: 13px !important;
+  margin-bottom: 0 !important;
+}
+
+.property-preview-location svg {
+  width: 14px;
+  height: 14px;
+}
+
+.property-preview-specs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px !important;
+  color: #666;
+  font-size: 13px !important;
+}
+
+.property-preview-specs span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.property-preview-specs svg {
+  width: 14px;
+  height: 14px;
+}
+
+.amenities-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px !important;
+}
+
+.amenity-tag {
+  background: #f5f5f5;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 11px !important;
+  color: #666;
+  font-weight: 500;
+}
+
+.property-preview-price {
+  font-size: 13px !important;
+  border-top: 1px solid #eee;
+  padding-top: 8px !important;
+  margin-top: 8px !important;
+}
+
+.price-loading {
+  color: #666;
+  font-style: italic;
+  font-size: 13px !important;
+}
+
+.price-error {
+  color: #e74c3c;
+  font-size: 13px !important;
+}
+
+.property-preview-price .price {
+  font-size: 18px !important;
+  font-weight: 600;
+  color: #333;
+}
+
+.property-preview-price .price-details {
+  color: #666;
+  margin-left: 4px;
+}
+
+.cleaning-fee,
+.security-deposit {
+  color: #666;
+  font-size: 12px !important;
+  margin-top: 2px !important;
 }

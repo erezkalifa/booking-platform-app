@@ -1,250 +1,138 @@
-/* Property Filter Component */
-.filter-form {
-  position: relative;
-  background: white;
-  border-radius: 100px;
-  padding: 8px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-  margin: 2rem auto;
-  max-width: 1200px;
-}
+/* PropertyFilter.css */
 
-.filter-content {
+/* 1. Container for entire filter bar */
+.filter-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap; /* Mobile‑first: wrap into multiple lines if needed */
+  gap: 12px; /* Spacing between segments */
+  padding: 16px; /* Inner padding */
+  background: #ffffff; /* White background */
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Subtle drop shadow */
+  margin: 16px; /* Margin around the filter bar */
 }
 
-.filter-group {
-  position: relative;
-  flex: 1;
-  min-width: 140px;
+/* 2. Each filter segment */
+.filter-segment {
+  position: relative; /* For pseudo-element separator */
+  flex: 1 1 100%; /* Mobile: full width */
+  min-width: 0; /* Prevent overflow when text is long */
+  padding: 0 12px; /* Horizontal padding inside segment */
+  display: flex;
+  flex-direction: column; /* Label on top, control below */
 }
 
-.filter-group:not(:last-child)::after {
+/* Vertical separator between segments */
+.filter-segment:not(:last-child)::after {
   content: "";
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  height: 24px;
   width: 1px;
-  background: var(--border-color);
+  height: 40px;
+  background: #e0e0e0; /* Light gray line */
+  display: none; /* Hidden on mobile */
 }
 
+/* 3. Segment label (above the control) */
 .filter-label {
-  display: block;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 4px;
-  padding-left: 16px;
+  color: #888888; /* Medium gray */
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin-bottom: 4px; /* Space between label and control */
 }
 
-.filter-input {
-  width: 100%;
-  padding: 8px 16px;
-  border: none;
-  background: none;
-  font-size: 1rem;
-  color: var(--text-color);
-  outline: none;
-}
-
-.filter-input::placeholder {
-  color: var(--text-secondary);
-  opacity: 0.7;
-}
-
-/* Price Range Inputs */
-.price-range {
+/* 4. Control area inside each segment */
+.filter-control {
   display: flex;
   align-items: center;
-  gap: 8px;
+  font-size: 16px;
+  color: #333333; /* Dark gray text */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  min-height: 44px; /* Minimum touch area */
 }
 
-.number-input {
-  width: 100px;
-  position: relative;
-  padding-left: 24px;
+/* Input and select styling */
+.filter-control input,
+.filter-control select {
+  flex: 1;
+  font-size: 16px;
+  color: #333333;
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  min-height: 44px; /* Minimum touch area */
+  cursor: pointer;
+  width: 100%;
 }
 
-.number-input::before {
-  content: "$";
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-secondary);
+.filter-control input:focus,
+.filter-control select:focus {
+  outline: none;
+  border-bottom: 2px solid #4a90e2; /* Blue underline on focus */
 }
 
-/* Date Range Picker */
+/* DatePicker customization */
 .react-datepicker-wrapper {
   width: 100%;
 }
 
 .react-datepicker-popper {
-  z-index: 100;
+  z-index: 2;
 }
 
 .react-datepicker {
   border: none !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-  padding: 16px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
   font-family: inherit !important;
 }
 
-.react-datepicker__header {
-  background: white !important;
-  border: none !important;
-  padding: 0 !important;
-  margin-bottom: 16px !important;
-}
-
-.react-datepicker__current-month {
-  font-weight: 600 !important;
-  margin-bottom: 16px !important;
-}
-
-.react-datepicker__day {
-  margin: 2px !important;
-  border-radius: 50% !important;
-  width: 36px !important;
-  height: 36px !important;
-  line-height: 36px !important;
-  color: var(--text-color) !important;
-}
-
-.react-datepicker__day:hover {
-  background: var(--background-color) !important;
-}
-
-.react-datepicker__day--selected,
-.react-datepicker__day--in-range {
-  background: var(--primary-color) !important;
-  color: white !important;
-}
-
-/* Search Button */
-.filter-actions {
-  padding-left: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary {
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 100px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
-.btn-primary svg {
-  width: 20px;
-  height: 20px;
-}
-
-.btn-reset {
-  background: none;
-  border: none;
-  padding: 8px;
-  width: 36px;
-  height: 36px;
+/* 5. Search/Action button */
+.filter-action {
+  flex: 0 0 auto; /* Do not grow or shrink */
+  min-width: 120px; /* Fixed minimum width */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-}
-
-.btn-reset:hover {
-  background: var(--background-color);
-  color: var(--error-color);
-  transform: rotate(90deg);
-}
-
-.btn-reset svg {
-  width: 20px;
-  height: 20px;
-}
-
-.btn-secondary {
-  background: none;
+  padding: 12px 24px;
+  background: #4a90e2; /* Primary brand color */
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
   border: none;
-  padding: 8px;
-  color: var(--text-secondary);
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease-in-out, box-shadow 0.2s;
+  min-height: 44px; /* Minimum touch area */
+  width: 100%; /* Full width on mobile */
 }
 
-.btn-secondary:hover {
-  background: var(--background-color);
+.filter-action:hover {
+  background: #3b78d6; /* Slightly darker on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .filter-form {
-    border-radius: 16px;
-    margin: 1rem;
+/* 7. Responsive adjustments for wider screens */
+@media (min-width: 640px) {
+  .filter-bar {
+    flex-wrap: nowrap; /* Single row on tablet+ */
+    margin: 24px; /* Larger margin on desktop */
   }
 
-  .filter-content {
-    flex-wrap: wrap;
+  .filter-segment {
+    flex: 1; /* Equal share of space */
   }
 
-  .filter-group {
-    flex: 1 1 calc(50% - 8px);
-    min-width: 200px;
+  .filter-segment:not(:last-child)::after {
+    display: block; /* Show separators on desktop */
   }
 
-  .filter-group:not(:last-child)::after {
-    display: none;
-  }
-
-  .filter-actions {
-    width: 100%;
-    padding: 8px;
-    display: flex;
-    justify-content: flex-end;
-    border-top: 1px solid var(--border-color);
-    margin-top: 8px;
-  }
-}
-
-@media (max-width: 768px) {
-  .filter-group {
-    flex: 1 1 100%;
-  }
-
-  .price-range {
-    flex-direction: row;
-  }
-
-  .number-input {
-    width: calc(50% - 4px);
-  }
-
-  .btn-primary {
-    width: 100%;
-    justify-content: center;
+  .filter-action {
+    width: auto; /* Auto width on desktop */
   }
 }

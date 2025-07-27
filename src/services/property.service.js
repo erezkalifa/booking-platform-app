@@ -9,40 +9,33 @@ export const propertyService = {
   getCities,
   getRegions,
   getPricing,
+  getDefaultDates,
 };
 
-function getDefaultDates() {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const dayAfter = new Date(today);
-  dayAfter.setDate(dayAfter.getDate() + 2);
-
-  // Format dates as YYYY-MM-DD
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  return {
-    check_in: formatDate(tomorrow),
-    check_out: formatDate(dayAfter),
-  };
+function formatDate(date) {
+  if (!date) return null;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 async function query(filterBy = {}) {
   try {
     const searchTerm = filterBy.city?.trim().toLowerCase();
 
-    // Get default dates if none provided
-    const defaultDates = getDefaultDates();
+    // Start with minimal params
     const params = {
       page: filterBy.page || 1,
-      check_in: filterBy.from || defaultDates.check_in,
-      check_out: filterBy.to || defaultDates.check_out,
     };
+
+    // Add dates only if explicitly provided
+    if (filterBy.from) {
+      params.check_in = formatDate(new Date(filterBy.from));
+    }
+    if (filterBy.to) {
+      params.check_out = formatDate(new Date(filterBy.to));
+    }
 
     // Add search term if provided
     if (searchTerm) {
@@ -222,23 +215,34 @@ async function getRegions() {
   }
 }
 
-async function getPricing(id, params = {}) {
+async function getPricing(id, checkIn, checkOut, guestsCount) {
   try {
-    const response = await api.get(`/listings/${id}/pricing`, { params });
-    return {
-      nightsCount: response.data.info.nights_count,
-      dayRate: response.data.info.day_rate,
-      subtotal: response.data.info.subtotal,
-      cleaningFee: response.data.info.cleaning_fee,
-      discount: response.data.info.discount,
-      taxes: response.data.info.taxes,
-      total: response.data.info.total,
-      securityDeposit: response.data.info.security_deposit,
-    };
-  } catch (error) {
-    console.error(`Error fetching pricing for property ${id}:`, error);
+    const response = await api.get(`/listings/${id}/pricing`, {
+      params: {
+        check_in: checkIn,
+        check_out: checkOut,
+        guests_count: guestsCount,
+      },
+    });
+    return response.data.info;
+  } catch (err) {
+    console.error("Error fetching property pricing:", err);
     return null;
   }
+}
+
+function getDefaultDates() {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dayAfterTomorrow = new Date(tomorrow);
+  dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
+
+  return {
+    checkIn: tomorrow.toISOString().split("T")[0],
+    checkOut: dayAfterTomorrow.toISOString().split("T")[0],
+  };
 }
 
 function transformPropertyData(apiProperty) {

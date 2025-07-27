@@ -1,47 +1,59 @@
 /* Property Index Page */
 .property-index {
-  padding: var(--spacing-large) 0;
-}
-
-.filter-section {
-  margin-bottom: var(--spacing-xl);
-  padding: var(--spacing-medium);
-  background: var(--background-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-}
-
-.results-section {
-  min-height: 400px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding-bottom: 32px;
 }
 
 .results-header {
-  margin-bottom: var(--spacing-large);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 .results-header h2 {
   font-size: 24px;
-  color: var(--text-color);
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
 }
 
-.results-header p {
-  color: var(--text-secondary);
+.results-header .text-secondary {
+  color: #666;
+  font-size: 16px;
 }
 
-/* Loading State */
+.no-results {
+  text-align: center;
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.no-results h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.no-results p {
+  color: #666;
+}
+
 .loader-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 400px;
+  min-height: 200px;
 }
 
 .loader {
-  width: 48px;
-  height: 48px;
   border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--primary-color);
   border-radius: 50%;
+  border-top: 3px solid #4a90e2;
+  width: 40px;
+  height: 40px;
   animation: spin 1s linear infinite;
 }
 
@@ -54,25 +66,37 @@
   }
 }
 
-/* Error State */
 .error-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
-
-.error-content {
   text-align: center;
-  color: var(--error-color);
+  padding: 32px;
+  max-width: 400px;
+  margin: 32px auto;
 }
 
-/* No Results State */
-.no-results {
-  text-align: center;
-  padding: var(--spacing-xl) 0;
+.error-content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
 }
 
-.no-results p {
-  color: var(--text-secondary);
+.error-content p {
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #4a90e2;
+  color: #4a90e2;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #4a90e2;
+  color: white;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { propertyService } from "../services/property.service";
 import { PropertyList } from "../cmps/PropertyList";
 import { PropertyFilter } from "../cmps/PropertyFilter";
@@ -16,16 +16,12 @@ export function PropertyIndex() {
     priceMax: "",
   });
 
-  const loadProperties = useCallback(async () => {
+  const loadProperties = async (filters) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const data = await propertyService.query({
-        ...filterBy,
-        page: 1, // Always fetch first page for now
-      });
-
+      const data = await propertyService.query(filters);
       setProperties(data);
     } catch (err) {
       console.error("Error loading properties:", err);
@@ -35,17 +31,16 @@ export function PropertyIndex() {
     } finally {
       setIsLoading(false);
     }
-  }, [filterBy]);
+  };
 
+  // Load initial data
   useEffect(() => {
-    loadProperties();
-  }, [filterBy, loadProperties]);
+    loadProperties({});
+  }, []);
 
   function onSetFilter(updatedFilter) {
-    setFilterBy((prev) => ({
-      ...prev,
-      ...updatedFilter,
-    }));
+    setFilterBy(updatedFilter);
+    loadProperties(updatedFilter);
   }
 
   if (isLoading && !properties.length) {
@@ -62,7 +57,10 @@ export function PropertyIndex() {
         <div className="error-content">
           <h3>Error Loading Properties</h3>
           <p>{error}</p>
-          <button className="btn btn-secondary" onClick={loadProperties}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => loadProperties(filterBy)}
+          >
             Try Again
           </button>
         </div>
@@ -72,33 +70,25 @@ export function PropertyIndex() {
 
   return (
     <main className="property-index">
-      <div className="container">
-        {/* Filter section */}
-        <section className="filter-section">
-          <PropertyFilter filterBy={filterBy} onSetFilter={onSetFilter} />
-        </section>
+      <PropertyFilter filterBy={filterBy} onSetFilter={onSetFilter} />
 
-        {/* Results section */}
-        <section className="results-section">
-          {properties.length === 0 ? (
-            <div className="no-results">
-              <h3>No Properties Found</h3>
-              <p>Try adjusting your filters to find more properties</p>
-            </div>
-          ) : (
-            <>
-              <div className="results-header">
-                <h2>{properties.length} Properties Available</h2>
-                <p className="text-secondary">
-                  {filterBy.city ? `in ${filterBy.city}` : "in all locations"}
-                </p>
-              </div>
+      {properties.length === 0 ? (
+        <div className="no-results">
+          <h3>No Properties Found</h3>
+          <p>Try adjusting your filters to find more properties</p>
+        </div>
+      ) : (
+        <>
+          <div className="results-header">
+            <h2>{properties.length} Properties Available</h2>
+            <p className="text-secondary">
+              {filterBy.city ? `in ${filterBy.city}` : "in all locations"}
+            </p>
+          </div>
 
-              <PropertyList properties={properties} />
-            </>
-          )}
-        </section>
-      </div>
+          <PropertyList properties={properties} />
+        </>
+      )}
     </main>
   );
 }

@@ -1,13 +1,17 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { propertyService } from "../services/property.service";
 
 export function PropertyPreview({ property }) {
+  const [pricing, setPricing] = useState(null);
+  const [isLoadingPrice, setIsLoadingPrice] = useState(true);
+
   const {
     id,
     title,
     description,
     location,
     images,
-    pricing,
     bedrooms,
     bathrooms,
     maxGuests,
@@ -15,20 +19,37 @@ export function PropertyPreview({ property }) {
     type,
   } = property;
 
+  useEffect(() => {
+    loadPricing();
+  }, [id]);
+
+  async function loadPricing() {
+    try {
+      setIsLoadingPrice(true);
+      const { checkIn, checkOut } = propertyService.getDefaultDates();
+      const pricingData = await propertyService.getPricing(
+        id,
+        checkIn,
+        checkOut,
+        2
+      ); // Default to 2 guests
+      setPricing(pricingData);
+    } catch (err) {
+      console.error("Failed to load pricing:", err);
+    } finally {
+      setIsLoadingPrice(false);
+    }
+  }
+
   const mainImage = images[0] || `https://picsum.photos/800/600?random=${id}`;
 
   // Format prices
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: pricing.currency,
+    currency: "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
-
-  const basePrice = formatter.format(pricing.basePrice);
-  const cleaningFee = pricing.cleaningFee
-    ? formatter.format(pricing.cleaningFee)
-    : null;
 
   // Get first 3 amenities for preview
   const previewAmenities = amenities?.slice(0, 3) || [];
@@ -108,10 +129,27 @@ export function PropertyPreview({ property }) {
         )}
 
         <div className="property-preview-price">
-          <span className="price">{basePrice}</span>
-          <span className="price-details">per night</span>
-          {cleaningFee && (
-            <div className="cleaning-fee">+ {cleaningFee} cleaning fee</div>
+          {isLoadingPrice ? (
+            <div className="price-loading">Loading price...</div>
+          ) : pricing ? (
+            <>
+              <span className="price">
+                {formatter.format(pricing.day_rate)}
+              </span>
+              <span className="price-details">per night</span>
+              {pricing.cleaning_fee > 0 && (
+                <div className="cleaning-fee">
+                  + {formatter.format(pricing.cleaning_fee)} cleaning fee
+                </div>
+              )}
+              {pricing.security_deposit > 0 && (
+                <div className="security-deposit">
+                  Security deposit: {formatter.format(pricing.security_deposit)}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="price-error">Price unavailable</div>
           )}
         </div>
       </div>

@@ -1,6 +1,17 @@
 import { Link } from "react-router-dom";
+import { useError } from "./ErrorContainer";
 
 export function Navbar() {
+  const { showError } = useError();
+
+  const handleLogin = () => {
+    showError({
+      message:
+        "🔒 Login is currently unavailable. We're working on implementing this feature. Please try again later!",
+      type: "Authentication",
+    });
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-content">
@@ -18,7 +29,13 @@ export function Navbar() {
         </div>
 
         <div className="navbar-actions">
-          <button className="btn-login">Login</button>
+          <button
+            className="btn-login"
+            onClick={handleLogin}
+            style={{ cursor: "pointer" }}
+          >
+            Login
+          </button>
           <button className="btn-signup">Sign Up</button>
         </div>
       </div>

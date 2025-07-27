@@ -9,6 +9,7 @@ export function PropertyIndex() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFiltering, setIsFiltering] = useState(false);
   const [error, setError] = useState(null);
+  const [isErrorVisible, setIsErrorVisible] = useState(false);
   const [filterBy, setFilterBy] = useState({
     city: "",
     from: "",
@@ -17,6 +18,18 @@ export function PropertyIndex() {
     priceMin: "",
     priceMax: "",
   });
+
+  useEffect(() => {
+    if (error) {
+      setIsErrorVisible(true);
+      // Auto-hide error after 5 seconds
+      const timer = setTimeout(() => {
+        setIsErrorVisible(false);
+        setTimeout(() => setError(null), 500); // Clear error after animation
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const loadProperties = async (filters) => {
     try {
@@ -63,23 +76,15 @@ export function PropertyIndex() {
         isFiltering={isFiltering}
       />
 
-      {error && (
-        <div
-          className="error-alert"
-          style={{
-            backgroundColor: "#fee2e2",
-            border: "1px solid #ef4444",
-            borderRadius: "8px",
-            padding: "16px",
-            margin: "24px auto",
-            maxWidth: "1600px",
-            color: "#991b1b",
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      {error && isErrorVisible && (
+        <div className={`error-toast ${!isErrorVisible ? "hide" : ""}`}>
+          <svg
+            className="error-toast-icon"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
             <path
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 9v5m0 0h2m-2 0H9m2-9v4"
               stroke="currentColor"
@@ -87,20 +92,15 @@ export function PropertyIndex() {
               strokeLinecap="round"
             />
           </svg>
-          {error}
+          <span className="error-toast-message">{error}</span>
           <button
-            onClick={() => loadProperties(filterBy)}
-            style={{
-              marginLeft: "auto",
-              padding: "4px 8px",
-              backgroundColor: "#991b1b",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
+            className="error-toast-close"
+            onClick={() => {
+              setIsErrorVisible(false);
+              setTimeout(() => setError(null), 500);
             }}
           >
-            Try Again
+            Dismiss
           </button>
         </div>
       )}

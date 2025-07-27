@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { propertyService } from "../services/property.service";
 
 export function PropertyFilter({ filterBy, onSetFilter }) {
   const [localFilters, setLocalFilters] = useState({
@@ -10,6 +11,13 @@ export function PropertyFilter({ filterBy, onSetFilter }) {
     priceMin: filterBy?.priceMin || "",
     priceMax: filterBy?.priceMax || "",
   });
+
+  const [cities, setCities] = useState([]);
+  const [showCitiesList, setShowCitiesList] = useState(false);
+
+  useEffect(() => {
+    loadCities();
+  }, []);
 
   useEffect(() => {
     setLocalFilters({
@@ -21,12 +29,33 @@ export function PropertyFilter({ filterBy, onSetFilter }) {
     });
   }, [filterBy]);
 
+  const loadCities = async () => {
+    try {
+      const citiesData = await propertyService.getCities();
+      setCities(citiesData);
+    } catch (err) {
+      console.error("Error loading cities:", err);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log("Filter input changed:", { name, value });
     setLocalFilters((prev) => ({
       ...prev,
       [name]: value,
     }));
+    if (name === "city") {
+      setShowCitiesList(true);
+    }
+  };
+
+  const handleCitySelect = (city) => {
+    setLocalFilters((prev) => ({
+      ...prev,
+      city,
+    }));
+    setShowCitiesList(false);
   };
 
   const handleDateChange = (dates) => {
@@ -53,7 +82,9 @@ export function PropertyFilter({ filterBy, onSetFilter }) {
       ...localFilters,
       from: localFilters.from?.toISOString().split("T")[0] || "",
       to: localFilters.to?.toISOString().split("T")[0] || "",
+      city: localFilters.city.trim(),
     };
+    console.log("Submitting filters:", formattedFilters);
     onSetFilter(formattedFilters);
   };
 
@@ -73,7 +104,49 @@ export function PropertyFilter({ filterBy, onSetFilter }) {
             onChange={handleInputChange}
             placeholder="Where are you going?"
             autoComplete="off"
+            onFocus={() => setShowCitiesList(true)}
           />
+          {showCitiesList && cities.length > 0 && (
+            <div
+              className="cities-dropdown"
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                right: 0,
+                background: "white",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                maxHeight: "200px",
+                overflowY: "auto",
+                zIndex: 1000,
+              }}
+            >
+              {cities
+                .filter((city) =>
+                  city.toLowerCase().includes(localFilters.city.toLowerCase())
+                )
+                .map((city, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleCitySelect(city)}
+                    style={{
+                      padding: "8px 12px",
+                      cursor: "pointer",
+                      borderBottom: "1px solid #eee",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.target.style.backgroundColor = "#f5f5f5")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.target.style.backgroundColor = "white")
+                    }
+                  >
+                    {city}
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       </div>
 

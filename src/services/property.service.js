@@ -22,30 +22,47 @@ function formatDate(date) {
 
 async function query(filterBy = {}) {
   try {
-    console.log("Fetching properties with filter:", filterBy);
+    const searchTerm = filterBy.city || "";
+
+    // First, try to get all listings
     const response = await api.get("/listings", {
       params: {
         page: 1,
-        search: filterBy.city,
-        beds: filterBy.bedrooms,
-        baths: filterBy.bathrooms,
-        check_in: filterBy.checkIn,
-        check_out: filterBy.checkOut,
-        guests_count: filterBy.guests,
       },
     });
-
-    console.log("Raw API Response:", response.data);
 
     if (!response.data || !response.data.listings) {
       console.error("Invalid API response structure:", response.data);
       return [];
     }
 
-    const properties = response.data.listings.map(transformPropertyData);
-    console.log("Transformed properties:", properties);
+    // Then filter locally by title, city_name, or address
+    let properties = response.data.listings;
 
-    return properties;
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      properties = properties.filter((property) => {
+        const title = (property.title || "").toLowerCase();
+        const cityName = (property.city_name || "").toLowerCase();
+        const nickname = (property.nickname || "").toLowerCase();
+        const address = (property.address?.city || "").toLowerCase();
+
+        return (
+          title.includes(searchLower) ||
+          cityName.includes(searchLower) ||
+          nickname.includes(searchLower) ||
+          address.includes(searchLower)
+        );
+      });
+    }
+
+    // Debug the filtered results
+    console.log("Filtered properties:", {
+      searchTerm,
+      total: properties.length,
+    });
+
+    return properties.map(transformPropertyData);
   } catch (err) {
     console.error("Error fetching properties:", err);
     throw err;
@@ -155,32 +172,20 @@ function getDefaultDates() {
 function transformPropertyData(apiProperty) {
   if (!apiProperty) return null;
 
-  // For debugging
-  console.log("Raw API Property:", apiProperty);
-
-  // Transform the pictures array to get the required URLs
   const images =
-    apiProperty.pictures?.map((pic) => {
-      // For debugging
-      console.log("Processing picture:", pic);
-
-      return {
-        id: pic.id || pic._id || String(Math.random()),
-        large: pic.large || pic.original || pic.regular || pic.picture,
-        regular: pic.regular || pic.large || pic.original || pic.picture,
-        original: pic.original || pic.large || pic.regular || pic.picture,
-        thumbnail:
-          pic.thumbnail ||
-          pic.regular ||
-          pic.large ||
-          pic.original ||
-          pic.picture,
-        caption: pic.caption || "",
-      };
-    }) || [];
-
-  // For debugging
-  console.log("Transformed images:", images);
+    apiProperty.pictures?.map((pic) => ({
+      id: pic.id || pic._id || String(Math.random()),
+      large: pic.large || pic.original || pic.regular || pic.picture,
+      regular: pic.regular || pic.large || pic.original || pic.picture,
+      original: pic.original || pic.large || pic.regular || pic.picture,
+      thumbnail:
+        pic.thumbnail ||
+        pic.regular ||
+        pic.large ||
+        pic.original ||
+        pic.picture,
+      caption: pic.caption || "",
+    })) || [];
 
   return {
     id: apiProperty.id,

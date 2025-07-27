@@ -5,6 +5,7 @@ import { wishlistService } from "../services/wishlist.service";
 import { ImageModal } from "../cmps/ImageModal";
 import { PhotoGallery } from "../cmps/PhotoGallery";
 import { showErrorMsg } from "../services/event-bus.service";
+import { removeEmojis } from "../utils/api.utils";
 
 export function PropertyDetails() {
   const { id } = useParams();
@@ -19,6 +20,8 @@ export function PropertyDetails() {
   const [selectedImageId, setSelectedImageId] = useState(null);
   const [showGallery, setShowGallery] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
+
+  // No special scroll logic needed; bottom bar remains visible on mobile
 
   // Format prices
   const formatter = new Intl.NumberFormat("en-US", {
@@ -171,7 +174,7 @@ export function PropertyDetails() {
         <ImageModal
           images={property.images}
           selectedImageId={selectedImageId}
-          title={property.title}
+          title={removeEmojis(property.title)}
           onClose={() => setShowModal(false)}
         />
       )}
@@ -179,7 +182,7 @@ export function PropertyDetails() {
       {showGallery && (
         <PhotoGallery
           images={property.images}
-          title={property.title}
+          title={removeEmojis(property.title)}
           onClose={() => setShowGallery(false)}
         />
       )}
@@ -199,7 +202,7 @@ export function PropertyDetails() {
             </svg>
             Back to Listings
           </button>
-          <h1 className="property-title">{property.title}</h1>
+          <h1 className="property-title">{removeEmojis(property.title)}</h1>
           <div className="property-meta">
             <span className="property-location">
               <svg
@@ -211,12 +214,12 @@ export function PropertyDetails() {
               >
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
               </svg>
-              {property.location}
+              {removeEmojis(property.location)}
             </span>
             <span className="property-price">{renderPrice()}</span>
           </div>
           <div className="property-details-header">
-            <h1>{property.title}</h1>
+            {/* <h1>{removeEmojis(property.title)}</h1> */}
             <button
               className={`wishlist-button large ${
                 isInWishlist ? "active" : ""

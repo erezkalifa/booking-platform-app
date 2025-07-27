@@ -81,14 +81,6 @@ api.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
 
-      // Debug the outgoing request
-      console.log("API Request:", {
-        url: config.url,
-        method: config.method,
-        params: config.params,
-        headers: config.headers,
-      });
-
       return config;
     } catch (error) {
       return Promise.reject(error);

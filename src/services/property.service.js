@@ -36,9 +36,10 @@ async function query(filterBy = {}) {
       return [];
     }
 
-    // Then filter locally by title, city_name, or address
+    // Then filter locally by various criteria
     let properties = response.data.listings;
 
+    // Filter by search term (title, city, nickname, address)
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       properties = properties.filter((property) => {
@@ -56,11 +57,45 @@ async function query(filterBy = {}) {
       });
     }
 
-    // Debug the filtered results
-    console.log("Filtered properties:", {
-      searchTerm,
-      total: properties.length,
-    });
+    // Filter by price if price range is specified
+    if (filterBy.priceMin || filterBy.priceMax) {
+      // First get pricing info for all properties
+      const { checkIn, checkOut } = getDefaultDates();
+      const pricingPromises = properties.map(async (property) => {
+        try {
+          const pricingData = await getPricing(
+            property.id,
+            checkIn,
+            checkOut,
+            2 // Default number of guests
+          );
+          return {
+            ...property,
+            pricing: pricingData,
+          };
+        } catch (err) {
+          console.error(
+            `Failed to get pricing for property ${property.id}:`,
+            err
+          );
+          return { ...property, pricing: null };
+        }
+      });
+
+      // Wait for all pricing info
+      properties = await Promise.all(pricingPromises);
+
+      // Now filter by price
+      properties = properties.filter((property) => {
+        const dayRate = property.pricing?.day_rate || 0;
+        const minPrice = Number(filterBy.priceMin) || 0;
+        const maxPrice = Number(filterBy.priceMax) || Infinity;
+
+        return (
+          dayRate >= minPrice && (maxPrice === Infinity || dayRate <= maxPrice)
+        );
+      });
+    }
 
     return properties.map(transformPropertyData);
   } catch (err) {

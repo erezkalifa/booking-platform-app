@@ -6,6 +6,7 @@ import { PropertyFilter } from "../cmps/PropertyFilter";
 export function PropertyIndex() {
   const [properties, setProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
   const [error, setError] = useState(null);
   const [filterBy, setFilterBy] = useState({
     city: "",
@@ -18,7 +19,7 @@ export function PropertyIndex() {
 
   const loadProperties = async (filters) => {
     try {
-      setIsLoading(true);
+      setIsFiltering(true);
       setError(null);
 
       const data = await propertyService.query(filters);
@@ -30,6 +31,7 @@ export function PropertyIndex() {
       );
     } finally {
       setIsLoading(false);
+      setIsFiltering(false);
     }
   };
 
@@ -70,7 +72,11 @@ export function PropertyIndex() {
 
   return (
     <main className="property-index">
-      <PropertyFilter filterBy={filterBy} onSetFilter={onSetFilter} />
+      <PropertyFilter
+        filterBy={filterBy}
+        onSetFilter={onSetFilter}
+        isFiltering={isFiltering}
+      />
 
       {properties.length === 0 ? (
         <div className="no-results">
@@ -79,12 +85,30 @@ export function PropertyIndex() {
         </div>
       ) : (
         <>
-          <div className="results-header">
-            <h2>{properties.length} Properties Available</h2>
-            <p className="text-secondary">
-              {filterBy.city ? `in ${filterBy.city}` : "in all locations"}
-            </p>
-          </div>
+          <h2
+            style={{
+              fontSize: "24px",
+              fontWeight: "600",
+              color: "#2c3e50",
+              margin: "32px 24px",
+              padding: "0 16px",
+              borderLeft: "4px solid #3498db",
+              maxWidth: "1600px",
+              marginLeft: "auto",
+              marginRight: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            {properties.length} Properties Available
+            {isFiltering && (
+              <div
+                className="filtering-spinner"
+                style={{ width: "20px", height: "20px" }}
+              ></div>
+            )}
+          </h2>
 
           <PropertyList properties={properties} />
         </>

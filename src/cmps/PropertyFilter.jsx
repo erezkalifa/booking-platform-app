@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { propertyService } from "../services/property.service";
 
-export function PropertyFilter({ filterBy, onSetFilter }) {
+export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
   const [localFilters, setLocalFilters] = useState({
     city: filterBy?.city || "",
     from: filterBy?.from ? new Date(filterBy.from) : null,
@@ -84,8 +84,21 @@ export function PropertyFilter({ filterBy, onSetFilter }) {
       to: localFilters.to?.toISOString().split("T")[0] || "",
       city: localFilters.city.trim(),
     };
-    console.log("Submitting filters:", formattedFilters);
+
     onSetFilter(formattedFilters);
+  };
+
+  const handleReset = (e) => {
+    e.preventDefault();
+    const emptyFilters = {
+      city: "",
+      from: null,
+      to: null,
+      priceMin: "",
+      priceMax: "",
+    };
+    setLocalFilters(emptyFilters);
+    onSetFilter(emptyFilters);
   };
 
   return (
@@ -197,20 +210,66 @@ export function PropertyFilter({ filterBy, onSetFilter }) {
         </div>
       </div>
 
-      {/* Search Button */}
-      <button type="submit" className="filter-action">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          style={{ width: 20, height: 20, marginRight: 8 }}
+      <div className="filter-actions" style={{ display: "flex", gap: "10px" }}>
+        {/* Search Button */}
+        <button
+          type="submit"
+          className="filter-action"
+          disabled={isFiltering}
+          style={{
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            opacity: isFiltering ? 0.7 : 1,
+            cursor: isFiltering ? "not-allowed" : "pointer",
+          }}
         >
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
-        Search
-      </button>
+          {isFiltering ? (
+            <>
+              <div className="button-spinner"></div>
+              Filtering...
+            </>
+          ) : (
+            <>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{ width: 20, height: 20 }}
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              Search
+            </>
+          )}
+        </button>
+
+        {/* Reset Button */}
+        <button
+          onClick={handleReset}
+          className="filter-action"
+          style={{
+            backgroundColor: "#f5f5f5",
+            color: "#333",
+            border: "1px solid #ddd",
+          }}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            style={{ width: 20, height: 20, marginRight: 8 }}
+          >
+            <path d="M3 12a9 9 0 1 1 2.83 6.54M3 12l4-4M3 12l4 4" />
+          </svg>
+          Reset
+        </button>
+      </div>
     </form>
   );
 }

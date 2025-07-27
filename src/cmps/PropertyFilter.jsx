@@ -385,9 +385,11 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
   return (
     <>
       {/* Desktop Filter */}
-      <form className="filter-bar desktop-filter" onSubmit={handleSearch}>
-        <FilterContent />
-      </form>
+      <div className="filter-container">
+        <form className="filter-bar desktop-filter" onSubmit={handleSearch}>
+          <FilterContent />
+        </form>
+      </div>
 
       {/* Mobile Filter Button & Modal */}
       <div className="mobile-filter">

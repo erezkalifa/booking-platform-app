@@ -259,14 +259,12 @@ export function PropertyDetails() {
               )}
             </div>
 
-            {/* Thumbnail grid */}
+            {/* Thumbnail grid - exactly 4 images */}
             <div className="gallery-thumbnails">
               {property.images.slice(1, 5).map((image, index) => (
                 <div
                   key={image.id}
-                  className={`thumbnail ${
-                    selectedImage === index + 1 ? "active" : ""
-                  }`}
+                  className="thumbnail"
                   onClick={() => handleImageClick(image)}
                 >
                   <img
@@ -278,21 +276,45 @@ export function PropertyDetails() {
                   />
                 </div>
               ))}
+              {/* If we have less than 5 images, fill with placeholder thumbnails */}
+              {[...Array(Math.max(0, 5 - property.images.length))].map(
+                (_, i) => (
+                  <div
+                    key={`placeholder-${i}`}
+                    className="thumbnail placeholder"
+                  >
+                    <div className="placeholder-content">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                        />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15l-5-5L5 21" />
+                      </svg>
+                    </div>
+                  </div>
+                )
+              )}
             </div>
 
-            {/* Show all photos button */}
+            {/* Show all photos button - only if we have more than 5 images */}
             {property.images.length > 5 && (
               <button className="show-all-photos" onClick={handleShowAllPhotos}>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
                 >
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                   <circle cx="8.5" cy="8.5" r="1.5" />

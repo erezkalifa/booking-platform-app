@@ -1,0 +1,84 @@
+/* Text utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-error {
+  color: var(--error-color);
+}
+
+/* Spacing utilities */
+.m-0 {
+  margin: 0;
+}
+.mt-sm {
+  margin-top: var(--spacing-small);
+}
+.mt-md {
+  margin-top: var(--spacing-medium);
+}
+.mt-lg {
+  margin-top: var(--spacing-large);
+}
+.mb-sm {
+  margin-bottom: var(--spacing-small);
+}
+.mb-md {
+  margin-bottom: var(--spacing-medium);
+}
+.mb-lg {
+  margin-bottom: var(--spacing-large);
+}
+
+.p-0 {
+  padding: 0;
+}
+.p-sm {
+  padding: var(--spacing-small);
+}
+.p-md {
+  padding: var(--spacing-medium);
+}
+.p-lg {
+  padding: var(--spacing-large);
+}
+
+/* Display utilities */
+.hidden {
+  display: none;
+}
+
+.block {
+  display: block;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hidden-tablet {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hidden-desktop {
+    display: none;
+  }
+}

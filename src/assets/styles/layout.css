@@ -1,0 +1,79 @@
+/* Layout styles */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-medium);
+}
+
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: var(--spacing-large) 0;
+}
+
+/* Grid layouts */
+.grid {
+  display: grid;
+  gap: var(--spacing-medium);
+}
+
+.grid-col-1 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-col-md-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-col-lg-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-col-xl-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Flex layouts */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* Spacing utilities */
+.gap-sm {
+  gap: var(--spacing-small);
+}
+
+.gap-md {
+  gap: var(--spacing-medium);
+}
+
+.gap-lg {
+  gap: var(--spacing-large);
+}

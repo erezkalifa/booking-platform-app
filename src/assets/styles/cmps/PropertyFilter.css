@@ -1,0 +1,250 @@
+/* Property Filter Component */
+.filter-form {
+  position: relative;
+  background: white;
+  border-radius: 100px;
+  padding: 8px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  max-width: 1200px;
+}
+
+.filter-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group {
+  position: relative;
+  flex: 1;
+  min-width: 140px;
+}
+
+.filter-group:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 24px;
+  width: 1px;
+  background: var(--border-color);
+}
+
+.filter-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+  padding-left: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  color: var(--text-color);
+  outline: none;
+}
+
+.filter-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Price Range Inputs */
+.price-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.number-input {
+  width: 100px;
+  position: relative;
+  padding-left: 24px;
+}
+
+.number-input::before {
+  content: "$";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+/* Date Range Picker */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker-popper {
+  z-index: 100;
+}
+
+.react-datepicker {
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  padding: 16px !important;
+  font-family: inherit !important;
+}
+
+.react-datepicker__header {
+  background: white !important;
+  border: none !important;
+  padding: 0 !important;
+  margin-bottom: 16px !important;
+}
+
+.react-datepicker__current-month {
+  font-weight: 600 !important;
+  margin-bottom: 16px !important;
+}
+
+.react-datepicker__day {
+  margin: 2px !important;
+  border-radius: 50% !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  color: var(--text-color) !important;
+}
+
+.react-datepicker__day:hover {
+  background: var(--background-color) !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Search Button */
+.filter-actions {
+  padding-left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-primary svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-reset {
+  background: none;
+  border: none;
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.btn-reset:hover {
+  background: var(--background-color);
+  color: var(--error-color);
+  transform: rotate(90deg);
+}
+
+.btn-reset svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-secondary {
+  background: none;
+  border: none;
+  padding: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--background-color);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .filter-form {
+    border-radius: 16px;
+    margin: 1rem;
+  }
+
+  .filter-content {
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 200px;
+  }
+
+  .filter-group:not(:last-child)::after {
+    display: none;
+  }
+
+  .filter-actions {
+    width: 100%;
+    padding: 8px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border-color);
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-group {
+    flex: 1 1 100%;
+  }
+
+  .price-range {
+    flex-direction: row;
+  }
+
+  .number-input {
+    width: calc(50% - 4px);
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}

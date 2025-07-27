@@ -1,0 +1,43 @@
+/* 404 Page Styles */
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.error-content {
+  max-width: 500px;
+  padding: var(--spacing-xl);
+}
+
+.error-title {
+  font-size: 120px;
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1;
+  margin-bottom: var(--spacing-medium);
+}
+
+.error-content h2 {
+  font-size: 32px;
+  margin-bottom: var(--spacing-medium);
+  color: var(--text-color);
+}
+
+.error-content p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-large);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .error-title {
+    font-size: 80px;
+  }
+
+  .error-content h2 {
+    font-size: 24px;
+  }
+}

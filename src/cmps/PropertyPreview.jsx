@@ -1,0 +1,120 @@
+import { Link } from "react-router-dom";
+
+export function PropertyPreview({ property }) {
+  const {
+    id,
+    title,
+    description,
+    location,
+    images,
+    pricing,
+    bedrooms,
+    bathrooms,
+    maxGuests,
+    amenities,
+    type,
+  } = property;
+
+  const mainImage = images[0] || `https://picsum.photos/800/600?random=${id}`;
+
+  // Format prices
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: pricing.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  const basePrice = formatter.format(pricing.basePrice);
+  const cleaningFee = pricing.cleaningFee
+    ? formatter.format(pricing.cleaningFee)
+    : null;
+
+  // Get first 3 amenities for preview
+  const previewAmenities = amenities?.slice(0, 3) || [];
+
+  return (
+    <Link to={`/property/${id}`} className="property-preview">
+      <div className="property-preview-image">
+        <img src={mainImage} alt={title} loading="lazy" />
+        {type && <div className="property-type-badge">{type}</div>}
+      </div>
+
+      <div className="property-preview-content">
+        <div className="property-preview-header">
+          <h3 className="property-preview-title">{title}</h3>
+          <p className="property-preview-location">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+            </svg>
+            {location}
+          </p>
+        </div>
+
+        <div className="property-preview-specs">
+          <span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {maxGuests} guests
+          </span>
+          <span>•</span>
+          <span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            {bedrooms} bed{bedrooms !== 1 ? "s" : ""}
+          </span>
+          <span>•</span>
+          <span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M21 12h-3m3 0l-3 3m3-3l-3-3M3 12h3m-3 0l3-3m-3 3l3 3" />
+            </svg>
+            {bathrooms} bath{bathrooms !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {previewAmenities.length > 0 && (
+          <div className="amenities-preview">
+            {previewAmenities.map((amenity, index) => (
+              <span key={index} className="amenity-tag">
+                {amenity}
+              </span>
+            ))}
+            {amenities?.length > 3 && (
+              <span className="amenity-tag">+{amenities.length - 3} more</span>
+            )}
+          </div>
+        )}
+
+        <div className="property-preview-price">
+          <span className="price">{basePrice}</span>
+          <span className="price-details">per night</span>
+          {cleaningFee && (
+            <div className="cleaning-fee">+ {cleaningFee} cleaning fee</div>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+}

@@ -1,13 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { propertyService } from "../services/property.service";
+import { wishlistService } from "../services/wishlist.service";
+import { showErrorMsg } from "../services/event-bus.service";
 import { getErrorMessage } from "../utils/api.utils";
 
 export function PropertyPreview({ property, onPriceLoadingChange }) {
   const [pricing, setPricing] = useState(null);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [priceError, setPriceError] = useState(null);
+  const [isInWishlist, setIsInWishlist] = useState(false);
   const loadingRef = useRef(false);
+  const mountedRef = useRef(true);
 
   const {
     id,
@@ -20,7 +24,12 @@ export function PropertyPreview({ property, onPriceLoadingChange }) {
     maxGuests,
     amenities,
     type,
+    image_url,
   } = property;
+
+  useEffect(() => {
+    setIsInWishlist(wishlistService.isInWishlist(id));
+  }, [id]);
 
   const loadPricing = useCallback(async () => {
     // Prevent multiple simultaneous loads
@@ -128,6 +137,12 @@ export function PropertyPreview({ property, onPriceLoadingChange }) {
     );
   };
 
+  const handleWishlistToggle = (e) => {
+    e.preventDefault(); // Prevent navigation when clicking the heart
+    const isNowInWishlist = wishlistService.toggleWishlist(id);
+    setIsInWishlist(isNowInWishlist);
+  };
+
   return (
     <Link to={`/property/${id}`} className="property-preview">
       <div className="property-preview-image">
@@ -140,7 +155,20 @@ export function PropertyPreview({ property, onPriceLoadingChange }) {
         ) : (
           <div className="no-image">No image available</div>
         )}
-        {type && <div className="property-type-badge">{type}</div>}
+        <button
+          className={`wishlist-button ${isInWishlist ? "active" : ""}`}
+          onClick={handleWishlistToggle}
+          aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill={isInWishlist ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </button>
       </div>
 
       <div className="property-preview-content">

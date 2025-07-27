@@ -6,9 +6,21 @@
 }
 
 .main-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 80px;
+}
+
+@media (max-width: 1200px) {
+  .main-layout {
+    padding: 0 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    padding: 0 24px;
+  }
 }
 
 .main-content {

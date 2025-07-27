@@ -411,3 +411,70 @@
     grid-template-columns: 1fr;
   }
 }
+
+.property-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.property-details-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #333;
+}
+
+.wishlist-button.large {
+  padding: 12px 24px;
+  border-radius: 24px;
+  background: white;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.wishlist-button.large svg {
+  width: 20px;
+  height: 20px;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.wishlist-button.large:hover {
+  background: #f8f9fa;
+  border-color: #ccc;
+  transform: translateY(-1px);
+}
+
+.wishlist-button.large.active {
+  background: #ff385c;
+  border-color: #ff385c;
+  color: white;
+}
+
+.wishlist-button.large.active svg {
+  color: white;
+}
+
+/* Add animation for the heart */
+@keyframes heartPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.wishlist-button.large.active svg {
+  animation: heartPop 0.3s ease;
+}

@@ -10,7 +10,7 @@ export function App() {
   return (
     <div className="app">
       <Navbar />
-      <main className="main-content">
+      <main className="main-layout">
         <Routes>
           <Route path="/" element={<PropertyIndex />} />
           <Route path="/property" element={<PropertyIndex />} />

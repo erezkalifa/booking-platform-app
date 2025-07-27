@@ -1,43 +1,29 @@
 /* Property List Component */
-.property-index .property-list {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important; /* Changed to 4 columns */
-  gap: 24px !important; /* Reduced gap for more space */
-  max-width: 1600px !important;
-  margin: 0 auto !important;
-  padding: 24px !important;
-  width: 100% !important;
+.property-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding: 20px 0;
 }
 
-/* Large screens - 4 cards */
-@media (min-width: 1400px) {
-  .property-index .property-list {
-    gap: 32px !important;
-    padding: 32px !important;
-  }
-}
-
-/* Medium-large screens - 3 cards */
-@media (max-width: 1399px) {
-  .property-index .property-list {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-
-/* Medium screens - 2 cards */
+/* Tablet - 2 cards */
 @media (max-width: 1024px) {
-  .property-index .property-list {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 24px !important;
+  .property-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Small screens - 1 card */
+/* Mobile - 1 card */
 @media (max-width: 640px) {
-  .property-index .property-list {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-    padding: 16px !important;
+  .property-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Medium screens - 3 cards */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .property-list {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

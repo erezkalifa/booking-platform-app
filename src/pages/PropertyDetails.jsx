@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { propertyService } from "../services/property.service";
+import { wishlistService } from "../services/wishlist.service";
 import { ImageModal } from "../cmps/ImageModal";
 import { PhotoGallery } from "../cmps/PhotoGallery";
 import { showErrorMsg } from "../services/event-bus.service";
@@ -17,6 +18,7 @@ export function PropertyDetails() {
   const [showModal, setShowModal] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState(null);
   const [showGallery, setShowGallery] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
 
   // Format prices
   const formatter = new Intl.NumberFormat("en-US", {
@@ -35,6 +37,12 @@ export function PropertyDetails() {
       loadPricing();
     }
   }, [property]);
+
+  useEffect(() => {
+    if (id) {
+      setIsInWishlist(wishlistService.isInWishlist(id));
+    }
+  }, [id]);
 
   async function loadProperty() {
     try {
@@ -72,6 +80,11 @@ export function PropertyDetails() {
       setIsPriceLoading(false);
     }
   }
+
+  const handleWishlistToggle = () => {
+    const isNowInWishlist = wishlistService.toggleWishlist(id);
+    setIsInWishlist(isNowInWishlist);
+  };
 
   if (isLoading || isPriceLoading) {
     return (
@@ -201,6 +214,28 @@ export function PropertyDetails() {
               {property.location}
             </span>
             <span className="property-price">{renderPrice()}</span>
+          </div>
+          <div className="property-details-header">
+            <h1>{property.title}</h1>
+            <button
+              className={`wishlist-button large ${
+                isInWishlist ? "active" : ""
+              }`}
+              onClick={handleWishlistToggle}
+              aria-label={
+                isInWishlist ? "Remove from wishlist" : "Add to wishlist"
+              }
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill={isInWishlist ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              {isInWishlist ? "Saved" : "Save"}
+            </button>
           </div>
         </div>
       </header>

@@ -15,4 +15,10 @@ export default defineConfig({
     host: true,
     port: process.env.PORT || 3000,
   },
+  preview: {
+    allowedHosts: [
+      "web-production-0fac.up.railway.app",
+      "*.up.railway.app", // This will allow all railway subdomains
+    ],
+  },
 });

@@ -42,6 +42,21 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
     loadCities();
   }, []);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      // Prevent body scrolling when modal is open
+      document.body.style.overflow = "hidden";
+    } else {
+      // Restore body scrolling when modal is closed
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup function to restore scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
+
   const loadCities = async () => {
     try {
       const cities = await propertyService.getCities();
@@ -101,6 +116,61 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
     return Object.values(localFilters).some(
       (value) => value !== "" && value !== null
     );
+  };
+
+  const getFilterTags = () => {
+    const tags = [];
+    if (localFilters.city) tags.push(`Location: ${localFilters.city}`);
+
+    if (localFilters.bedrooms) {
+      tags.push(`Bedrooms: ${localFilters.bedrooms}`);
+    }
+
+    if (localFilters.guests) {
+      tags.push(`Guests: ${localFilters.guests}`);
+    }
+
+    if (localFilters.priceMin || localFilters.priceMax) {
+      let rangeLabel = "";
+      if (localFilters.priceMin && localFilters.priceMax) {
+        rangeLabel = `Price: $${localFilters.priceMin} - $${localFilters.priceMax}`;
+      } else if (localFilters.priceMin) {
+        rangeLabel = `Price: $${localFilters.priceMin}+`;
+      } else if (localFilters.priceMax) {
+        rangeLabel = `Price: Up to $${localFilters.priceMax}`;
+      }
+      if (rangeLabel) tags.push(rangeLabel);
+    }
+
+    if (localFilters.from && localFilters.to) {
+      const options = { month: "short", day: "numeric" };
+      const fromStr = localFilters.from.toLocaleDateString("en-US", options);
+      const toStr = localFilters.to.toLocaleDateString("en-US", options);
+      tags.push(`Dates: ${fromStr} - ${toStr}`);
+    }
+
+    return tags;
+  };
+
+  const removeFilterTag = (tagText) => {
+    const newFilters = { ...localFilters };
+
+    if (tagText.startsWith("Location:")) {
+      newFilters.city = "";
+    } else if (tagText.startsWith("Bedrooms:")) {
+      newFilters.bedrooms = "";
+    } else if (tagText.startsWith("Guests:")) {
+      newFilters.guests = "";
+    } else if (tagText.startsWith("Price:")) {
+      newFilters.priceMin = "";
+      newFilters.priceMax = "";
+    } else if (tagText.startsWith("Dates:")) {
+      newFilters.from = null;
+      newFilters.to = null;
+    }
+
+    setLocalFilters(newFilters);
+    onSetFilter(newFilters);
   };
 
   const renderCustomDropdown = (type) => {
@@ -231,7 +301,6 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
                       priceMax: max || "",
                     };
                     setLocalFilters(newFilters);
-                    onSetFilter(newFilters);
                     setActiveDropdown(null); // Close dropdown after selection
                   } else {
                     handleOptionSelect(type, option.value);
@@ -265,7 +334,6 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
       [field]: value,
     };
     setLocalFilters(newFilters);
-    onSetFilter(newFilters);
     setActiveDropdown(null);
   };
 
@@ -364,20 +432,23 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
         </button>
 
         {/* Reset Button */}
-        {hasActiveFilters() && (
-          <button onClick={handleReset} className="filter-action" type="button">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              style={{ width: 20, height: 20, marginRight: 8 }}
-            >
-              <path d="M3 12a9 9 0 1 1 2.83 6.54M3 12l4-4M3 12l4 4" />
-            </svg>
-            Reset
-          </button>
-        )}
+        <button
+          onClick={handleReset}
+          className={`filter-action ${!hasActiveFilters() ? "disabled" : ""}`}
+          type="button"
+          disabled={!hasActiveFilters()}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            style={{ width: 20, height: 20, marginRight: 8 }}
+          >
+            <path d="M3 12a9 9 0 1 1 2.83 6.54M3 12l4-4M3 12l4 4" />
+          </svg>
+          Reset All
+        </button>
       </div>
     </>
   );
@@ -409,6 +480,28 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
           Filters
           {hasActiveFilters() && <span className="filter-badge" />}
         </button>
+
+        {/* Selected filter tags (mobile view) */}
+        {getFilterTags().length > 0 && (
+          <div className="filter-tags" aria-label="Selected filters">
+            {getFilterTags().map((tag, idx) => (
+              <span
+                key={idx}
+                className="filter-tag"
+                onClick={() => removeFilterTag(tag)}
+              >
+                {tag}
+              </span>
+            ))}
+            <button
+              className="reset-all-button"
+              onClick={handleReset}
+              type="button"
+            >
+              Reset All
+            </button>
+          </div>
+        )}
 
         {isModalOpen && (
           <div

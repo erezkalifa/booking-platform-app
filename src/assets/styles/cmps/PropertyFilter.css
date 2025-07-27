@@ -325,6 +325,23 @@
   color: #333;
 }
 
+.filter-action.disabled,
+.filter-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f8f9fa;
+  color: #999;
+  border-color: #e9ecef;
+}
+
+.filter-action.disabled:hover,
+.filter-action:disabled:hover {
+  background: #f8f9fa;
+  color: #999;
+  border-color: #e9ecef;
+  transform: none;
+}
+
 /* Loading spinner */
 .button-spinner {
   width: 16px;
@@ -408,24 +425,33 @@
 /* Mobile Filter */
 .mobile-filter {
   display: none;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 48px 0 16px 0;
 }
 
 .mobile-filter-button {
   display: flex;
   align-items: center;
-  padding: 12px 20px;
+  padding: 14px 24px;
   background: white;
   border: 1px solid #ddd;
-  border-radius: 24px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
   color: #333;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-width: 140px;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-filter-button:hover {
   background: #f8f9fa;
-  border-color: #ccc;
+  border-color: #bbb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .filter-badge {
@@ -434,6 +460,51 @@
   background: #ff385c;
   border-radius: 50%;
   margin-left: 8px;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-tag {
+  color: #666;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.filter-tag::after {
+  content: "×";
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+}
+
+.filter-tag:hover::after {
+  color: #666;
+}
+
+.reset-all-button {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  color: #666;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.reset-all-button:hover {
+  background: #e9ecef;
+  border-color: #dee2e6;
+  color: #333;
 }
 
 /* Filter Modal */
@@ -662,11 +733,20 @@
   }
 
   .mobile-filter {
-    display: block;
-    margin: 16px 0;
+    display: flex;
+  }
+}
+
+@media (min-width: 1301px) {
+  .desktop-filter {
+    display: flex;
   }
 
-  .filter-container {
-    padding: 0 16px;
+  .mobile-filter {
+    display: none;
+  }
+
+  .filter-tags {
+    display: none;
   }
 }

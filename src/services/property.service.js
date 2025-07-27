@@ -66,7 +66,7 @@ async function query(filterBy = {}) {
     if (filterBy.bedrooms) {
       const bedroomsCount = Number(filterBy.bedrooms);
       properties = properties.filter((property) => {
-        const propertyBedrooms = Number(property.beds) || 0;
+        const propertyBedrooms = Number(property.bedrooms) || 0;
         return bedroomsCount === 5
           ? propertyBedrooms >= 5
           : propertyBedrooms === bedroomsCount;

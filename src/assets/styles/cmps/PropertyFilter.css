@@ -4,135 +4,371 @@
 .filter-bar {
   display: flex;
   align-items: center;
-  flex-wrap: wrap; /* Mobile‑first: wrap into multiple lines if needed */
-  gap: 12px; /* Spacing between segments */
-  padding: 16px; /* Inner padding */
-  background: #ffffff; /* White background */
-  border-radius: 12px; /* Rounded corners */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Subtle drop shadow */
-  margin: 16px; /* Margin around the filter bar */
+  gap: 16px;
+  padding: 12px 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 16px auto;
+  max-width: 1300px;
+  width: 100%;
 }
 
 /* 2. Each filter segment */
 .filter-segment {
-  position: relative; /* For pseudo-element separator */
-  flex: 1 1 100%; /* Mobile: full width */
-  min-width: 0; /* Prevent overflow when text is long */
-  padding: 0 12px; /* Horizontal padding inside segment */
+  position: relative;
+  min-width: 140px;
+  max-width: 200px;
+  flex: 1;
+  height: 56px;
   display: flex;
-  flex-direction: column; /* Label on top, control below */
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* Vertical separator between segments */
+/* Location segment specific */
+.filter-segment:first-child {
+  min-width: 180px;
+  max-width: 240px;
+}
+
+/* Date picker segment specific */
+.filter-segment:nth-child(2) {
+  min-width: 200px;
+  max-width: 260px;
+}
+
 .filter-segment:not(:last-child)::after {
   content: "";
   position: absolute;
-  right: 0;
+  right: -8px;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: #eee;
+}
+
+/* Custom dropdowns */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.dropdown-button {
+  width: 100%;
+  height: 100%;
+  padding: 8px 16px;
+  background: white;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-button:hover {
+  background: #f8f9fa;
+}
+
+.dropdown-button.active {
+  color: #3498db;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  width: 1px;
-  height: 40px;
-  background: #e0e0e0; /* Light gray line */
-  display: none; /* Hidden on mobile */
+  width: 18px;
+  height: 18px;
+  color: #666;
+  flex-shrink: 0;
 }
 
-/* 3. Segment label (above the control) */
-.filter-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #888888; /* Medium gray */
+.dropdown-button-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding-right: 32px;
+}
+
+.dropdown-label {
+  font-size: 0.75rem;
+  color: #666;
   text-transform: uppercase;
-  margin-bottom: 4px; /* Space between label and control */
+  letter-spacing: 0.5px;
+  line-height: 1;
 }
 
-/* 4. Control area inside each segment */
-.filter-control {
+.dropdown-value {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out;
+  min-width: 200px;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  font-size: 16px;
-  color: #333333; /* Dark gray text */
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  min-height: 44px; /* Minimum touch area */
+  gap: 8px;
+  color: #666;
+  font-size: 0.95rem;
 }
 
-/* Input and select styling */
-.filter-control input,
-.filter-control select {
-  flex: 1;
-  font-size: 16px;
-  color: #333333;
-  background: transparent;
-  border: none;
-  padding: 4px 0;
-  min-height: 44px; /* Minimum touch area */
-  cursor: pointer;
+.dropdown-item:hover {
+  background: #f8f9fa;
+  color: #3498db;
+}
+
+.dropdown-item.selected {
+  background: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  font-weight: 500;
+}
+
+.dropdown-item.selected::before {
+  content: "✓";
+  font-weight: bold;
+}
+
+/* Filter control */
+.filter-control {
+  /* height: 100%; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 16px;
+  gap: 4px;
+}
+
+.filter-label {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  margin: 0;
+}
+
+.filter-control input {
   width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1;
+  margin: 0;
+  height: 20px;
 }
 
-.filter-control input:focus,
-.filter-control select:focus {
+.filter-control input:focus {
   outline: none;
-  border-bottom: 2px solid #4a90e2; /* Blue underline on focus */
+  color: #3498db;
 }
 
-/* DatePicker customization */
+.filter-control input::placeholder {
+  color: #999;
+  font-size: 0.95rem;
+}
+
+/* Date picker customization */
 .react-datepicker-wrapper {
   width: 100%;
 }
 
-.react-datepicker-popper {
-  z-index: 2;
-}
-
-.react-datepicker {
-  border: none !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  font-family: inherit !important;
-}
-
-/* 5. Search/Action button */
-.filter-action {
-  flex: 0 0 auto; /* Do not grow or shrink */
-  min-width: 120px; /* Fixed minimum width */
+.react-datepicker__input-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  background: #4a90e2; /* Primary brand color */
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 600;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 0;
   border: none;
   border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333;
   cursor: pointer;
-  transition: background 0.2s ease-in-out, box-shadow 0.2s;
-  min-height: 44px; /* Minimum touch area */
-  width: 100%; /* Full width on mobile */
+  line-height: 1;
+  margin: 0;
+  height: 20px;
 }
 
-.filter-action:hover {
-  background: #3b78d6; /* Slightly darker on hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Remove any margin/padding from the datepicker container */
+.filter-segment:nth-child(2) .filter-control {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-/* 7. Responsive adjustments for wider screens */
-@media (min-width: 640px) {
+/* Ensure the datepicker wrapper doesn't add extra space */
+.filter-segment:nth-child(2) .react-datepicker-wrapper {
+  margin: 0;
+  padding: 0;
+}
+
+/* Reset the input container padding */
+.filter-segment:nth-child(2) .react-datepicker__input-container {
+  padding: 0;
+}
+
+/* Add label for check-in/check-out */
+.filter-segment:nth-child(2) .filter-label {
+  content: "CHECK-IN / CHECK-OUT";
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  margin: 0;
+}
+
+/* Filter actions */
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  height: 40px;
+}
+
+.filter-action {
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  height: 100%;
+}
+
+.filter-action:first-child {
+  background: #3498db;
+  color: white;
+  border: none;
+  opacity: 1;
+}
+
+.filter-action:first-child:hover {
+  background: #2980b9;
+}
+
+.filter-action:first-child:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.filter-action:last-child {
+  background: #f8f9fa;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.filter-action:last-child:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+/* Loading spinner */
+.button-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
   .filter-bar {
-    flex-wrap: nowrap; /* Single row on tablet+ */
-    margin: 24px; /* Larger margin on desktop */
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    margin: 16px;
   }
 
   .filter-segment {
-    flex: 1; /* Equal share of space */
+    width: 100%;
+    max-width: none;
+  }
+
+  .filter-segment:first-child,
+  .filter-segment:nth-child(2) {
+    max-width: none;
   }
 
   .filter-segment:not(:last-child)::after {
-    display: block; /* Show separators on desktop */
+    display: none;
+  }
+
+  .filter-actions {
+    width: 100%;
+    flex-direction: column;
   }
 
   .filter-action {
-    width: auto; /* Auto width on desktop */
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
   }
 }

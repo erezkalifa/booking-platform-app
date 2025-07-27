@@ -12,5 +12,7 @@ export default defineConfig({
         secure: true,
       },
     },
+    host: true,
+    port: process.env.PORT || 3000,
   },
 });

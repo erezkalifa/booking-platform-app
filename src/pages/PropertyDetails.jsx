@@ -1,18 +1,39 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { propertyService } from "../services/property.service";
+import { ImageModal } from "../cmps/ImageModal";
+import { PhotoGallery } from "../cmps/PhotoGallery";
 
 export function PropertyDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [property, setProperty] = useState(null);
+  const [pricing, setPricing] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPriceLoading, setIsPriceLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState(null);
+  const [showGallery, setShowGallery] = useState(false);
+
+  // Format prices
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
 
   useEffect(() => {
     loadProperty();
   }, [id]);
+
+  useEffect(() => {
+    if (property) {
+      loadPricing();
+    }
+  }, [property]);
 
   async function loadProperty() {
     try {
@@ -28,6 +49,24 @@ export function PropertyDetails() {
       );
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function loadPricing() {
+    try {
+      setIsPriceLoading(true);
+      const { checkIn, checkOut } = propertyService.getDefaultDates();
+      const pricingData = await propertyService.getPricing(
+        id,
+        checkIn,
+        checkOut,
+        2
+      );
+      setPricing(pricingData);
+    } catch (err) {
+      console.error("Error loading pricing:", err);
+    } finally {
+      setIsPriceLoading(false);
     }
   }
 
@@ -69,8 +108,66 @@ export function PropertyDetails() {
     );
   }
 
+  const renderPrice = () => {
+    if (isPriceLoading) {
+      return (
+        <div className="price-loading">
+          <span>Loading price...</span>
+        </div>
+      );
+    }
+
+    if (!pricing) {
+      return (
+        <div className="price-error">
+          <span>Price unavailable</span>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <span className="price-amount">
+          {formatter.format(pricing.day_rate)}
+        </span>
+        <span className="price-period">per night</span>
+        {pricing.cleaning_fee > 0 && (
+          <div className="cleaning-fee">
+            + {formatter.format(pricing.cleaning_fee)} cleaning fee
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const handleImageClick = (image) => {
+    setSelectedImageId(image.id);
+    setShowModal(true);
+  };
+
+  const handleShowAllPhotos = () => {
+    setShowGallery(true);
+  };
+
   return (
     <div className="property-details">
+      {showModal && property.images.length > 0 && (
+        <ImageModal
+          images={property.images}
+          selectedImageId={selectedImageId}
+          title={property.title}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+
+      {showGallery && (
+        <PhotoGallery
+          images={property.images}
+          title={property.title}
+          onClose={() => setShowGallery(false)}
+        />
+      )}
+
       {/* Header Section */}
       <header className="property-header">
         <div className="container">
@@ -100,12 +197,7 @@ export function PropertyDetails() {
               </svg>
               {property.location}
             </span>
-            <span className="property-price">
-              <span className="price-amount">
-                ${property.pricing?.basePrice}
-              </span>
-              <span className="price-period">per night</span>
-            </span>
+            <span className="property-price">{renderPrice()}</span>
           </div>
         </div>
       </header>
@@ -114,29 +206,63 @@ export function PropertyDetails() {
       <section className="gallery-section">
         <div className="container">
           <div className="gallery-grid">
-            <div className="gallery-main">
-              <img
-                src={property.images[selectedImage]}
-                alt={`${property.title} - Featured`}
-                className="main-image"
-              />
+            {/* Main large image */}
+            <div
+              className="gallery-main"
+              onClick={() => handleImageClick(property.images[0])}
+            >
+              {property.images.length > 0 && (
+                <img
+                  src={property.images[0].large}
+                  alt={
+                    property.images[0].caption || `${property.title} - Featured`
+                  }
+                />
+              )}
             </div>
+
+            {/* Thumbnail grid */}
             <div className="gallery-thumbnails">
-              {property.images.map((image, index) => (
+              {property.images.slice(1, 5).map((image, index) => (
                 <div
-                  key={index}
+                  key={image.id}
                   className={`thumbnail ${
-                    selectedImage === index ? "active" : ""
+                    selectedImage === index + 1 ? "active" : ""
                   }`}
-                  onClick={() => setSelectedImage(index)}
+                  onClick={() => handleImageClick(image)}
                 >
                   <img
-                    src={image}
-                    alt={`${property.title} - Thumbnail ${index + 1}`}
+                    src={image.large}
+                    alt={
+                      image.caption || `${property.title} - Image ${index + 2}`
+                    }
+                    loading="lazy"
                   />
                 </div>
               ))}
             </div>
+
+            {/* Show all photos button */}
+            {property.images.length > 5 && (
+              <button className="show-all-photos" onClick={handleShowAllPhotos}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path d="M21 15l-5-5L5 21" />
+                </svg>
+                Show all photos ({property.images.length})
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -218,12 +344,7 @@ export function PropertyDetails() {
           <aside className="booking-section">
             <div className="booking-widget">
               <h3>Book this property</h3>
-              <div className="booking-price">
-                <span className="price-amount">
-                  ${property.pricing?.basePrice}
-                </span>
-                <span className="price-period">per night</span>
-              </div>
+              <div className="booking-price">{renderPrice()}</div>
               <div className="booking-form">
                 {/* Add your booking form component here */}
                 <button className="btn btn-primary btn-block">

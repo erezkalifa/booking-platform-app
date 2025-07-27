@@ -246,35 +246,32 @@ function getDefaultDates() {
 }
 
 function transformPropertyData(apiProperty) {
-  const images = apiProperty.pictures?.map((pic) => pic.picture) || [];
+  if (!apiProperty) return null;
+
+  // Transform the pictures array to get the required URLs
+  const images =
+    apiProperty.pictures?.map((pic) => ({
+      id: pic.id || pic._id,
+      large: pic.large || pic.original,
+      regular: pic.regular || pic.original,
+      thumbnail: pic.thumbnail || pic.original,
+      caption: pic.caption || "",
+    })) || [];
 
   return {
     id: apiProperty.id,
-    title: apiProperty.title || "Unnamed Property",
+    title: apiProperty.title || apiProperty.nickname,
     description:
-      apiProperty.marketing_content?.description ||
-      apiProperty.description ||
-      "No description available",
-    location: apiProperty.city_name || apiProperty.address?.city || "",
-    images: images,
-    pricing: {
-      basePrice: apiProperty.days_rates
-        ? Object.values(apiProperty.days_rates)[0] || 0
-        : 0,
-      currency: "USD",
-      total:
-        apiProperty.total_price ||
-        (apiProperty.days_rates
-          ? Object.values(apiProperty.days_rates)[0] || 0
-          : 0),
-    },
-    bedrooms: parseInt(apiProperty.beds) || 0,
-    bathrooms: parseInt(apiProperty.baths) || 0,
-    maxGuests: parseInt(apiProperty.accommodates) || 1,
+      apiProperty.marketing_content?.description || apiProperty.description,
+    location: apiProperty.city_name || apiProperty.address?.city,
+    images,
+    bedrooms: apiProperty.beds,
+    bathrooms: apiProperty.baths,
+    maxGuests: apiProperty.accommodates,
     amenities: apiProperty.amenities || [],
-    type: apiProperty.ota_type || "Property",
+    type: apiProperty.ota_type,
     latitude: apiProperty.lat,
     longitude: apiProperty.lng,
-    address: apiProperty.address || {},
+    address: apiProperty.address,
   };
 }

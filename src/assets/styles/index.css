@@ -16,6 +16,8 @@
 @import "./cmps/PropertyPreview.css";
 @import "./cmps/AvailabilityCalendar.css";
 @import "./cmps/Navbar.css";
+@import "./cmps/ImageModal.css";
+@import "./cmps/PhotoGallery.css";
 
 /* Page styles */
 @import "./pages/PropertyIndex.css";

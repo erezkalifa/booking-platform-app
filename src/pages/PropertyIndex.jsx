@@ -15,7 +15,7 @@ export function PropertyIndex() {
     city: "",
     from: "",
     to: "",
-    guests: 1,
+    guests: "",
     priceMin: "",
     priceMax: "",
   });

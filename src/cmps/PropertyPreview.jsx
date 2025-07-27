@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { propertyService } from "../services/property.service";
+import { getErrorMessage } from "../utils/api.utils";
 
 export function PropertyPreview({ property }) {
   const [pricing, setPricing] = useState(null);
   const [isLoadingPrice, setIsLoadingPrice] = useState(true);
+  const [priceError, setPriceError] = useState(null);
 
   const {
     id,
@@ -26,6 +28,8 @@ export function PropertyPreview({ property }) {
   async function loadPricing() {
     try {
       setIsLoadingPrice(true);
+      setPriceError(null);
+
       const { checkIn, checkOut } = propertyService.getDefaultDates();
       const pricingData = await propertyService.getPricing(
         id,
@@ -36,6 +40,8 @@ export function PropertyPreview({ property }) {
       setPricing(pricingData);
     } catch (err) {
       console.error("Failed to load pricing:", err);
+      setPriceError(getErrorMessage(err));
+      setPricing(null);
     } finally {
       setIsLoadingPrice(false);
     }
@@ -57,6 +63,54 @@ export function PropertyPreview({ property }) {
 
   // Get first 3 amenities for preview
   const previewAmenities = amenities?.slice(0, 3) || [];
+
+  const renderPrice = () => {
+    if (isLoadingPrice) {
+      return <div className="price-loading">Loading price...</div>;
+    }
+
+    if (priceError) {
+      return (
+        <div
+          className="price-error"
+          style={{ cursor: "pointer" }}
+          onClick={(e) => {
+            e.preventDefault(); // Prevent navigation
+            loadPricing(); // Retry loading price
+          }}
+        >
+          <span>Price unavailable - Retry</span>
+        </div>
+      );
+    }
+
+    if (!pricing || typeof pricing.day_rate === "undefined") {
+      return (
+        <div
+          className="price-error"
+          style={{ cursor: "pointer" }}
+          onClick={(e) => {
+            e.preventDefault();
+            loadPricing();
+          }}
+        >
+          <span>Click to load price</span>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <span className="price">{formatter.format(pricing.day_rate || 0)}</span>
+        <span className="price-details">per night</span>
+        {pricing.cleaning_fee > 0 && (
+          <div className="cleaning-fee">
+            + {formatter.format(pricing.cleaning_fee)} cleaning fee
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
     <Link to={`/property/${id}`} className="property-preview">
@@ -140,25 +194,7 @@ export function PropertyPreview({ property }) {
           </div>
         )}
 
-        <div className="property-preview-price">
-          {isLoadingPrice ? (
-            <div className="price-loading">Loading price...</div>
-          ) : pricing ? (
-            <>
-              <span className="price">
-                {formatter.format(pricing.day_rate)}
-              </span>
-              <span className="price-details">per night</span>
-              {pricing.cleaning_fee > 0 && (
-                <div className="cleaning-fee">
-                  + {formatter.format(pricing.cleaning_fee)} cleaning fee
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="price-error">Price unavailable</div>
-          )}
-        </div>
+        <div className="property-preview-price">{renderPrice()}</div>
       </div>
     </Link>
   );

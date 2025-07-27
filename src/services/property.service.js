@@ -1,5 +1,6 @@
 // src/services/property.service.js
 import api from "./api.service";
+import { ApiError, handleApiResponse } from "../utils/api.utils";
 
 export const propertyService = {
   query,
@@ -22,7 +23,7 @@ function formatDate(date) {
 
 async function query(filterBy = {}) {
   try {
-    const searchTerm = filterBy.city || "";
+    const { checkIn, checkOut } = getDefaultDates();
 
     // First, try to get all listings
     const response = await api.get("/listings", {
@@ -31,17 +32,21 @@ async function query(filterBy = {}) {
       },
     });
 
-    if (!response.data || !response.data.listings) {
-      console.error("Invalid API response structure:", response.data);
-      return [];
+    const data = await handleApiResponse(response);
+
+    if (!data.listings) {
+      throw new ApiError(
+        500,
+        "Invalid API response structure: missing listings"
+      );
     }
 
     // Then filter locally by various criteria
-    let properties = response.data.listings;
+    let properties = data.listings;
 
     // Filter by search term (title, city, nickname, address)
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (filterBy.city) {
+      const searchLower = filterBy.city.toLowerCase();
       properties = properties.filter((property) => {
         const title = (property.title || "").toLowerCase();
         const cityName = (property.city_name || "").toLowerCase();
@@ -60,7 +65,6 @@ async function query(filterBy = {}) {
     // Filter by price if price range is specified
     if (filterBy.priceMin || filterBy.priceMax) {
       // First get pricing info for all properties
-      const { checkIn, checkOut } = getDefaultDates();
       const pricingPromises = properties.map(async (property) => {
         try {
           const pricingData = await getPricing(
@@ -99,26 +103,28 @@ async function query(filterBy = {}) {
 
     return properties.map(transformPropertyData);
   } catch (err) {
-    console.error("Error fetching properties:", err);
-    throw err;
+    if (err instanceof ApiError) {
+      throw err;
+    }
+    throw new ApiError(500, "Failed to fetch properties", err);
   }
 }
 
 async function getById(id) {
   try {
     const response = await api.get(`/listings/${id}`);
-    return transformPropertyData(response.data.listing);
-  } catch (error) {
-    console.error(
-      "Error fetching property details:",
-      error.response?.data || error.message
-    );
-    if (error.response?.status === 404) {
-      throw new Error("Property not found");
+    const data = await handleApiResponse(response);
+
+    if (!data.listing) {
+      throw new ApiError(404, "Property not found");
     }
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch property details"
-    );
+
+    return transformPropertyData(data.listing);
+  } catch (err) {
+    if (err instanceof ApiError) {
+      throw err;
+    }
+    throw new ApiError(500, "Failed to fetch property details", err);
   }
 }
 
@@ -183,10 +189,40 @@ async function getPricing(id, checkIn, checkOut, guestsCount) {
         guests_count: guestsCount,
       },
     });
-    return response.data.info;
+
+    // Log the raw response for debugging
+    console.log(`Pricing API Response for property ${id}:`, {
+      status: response.status,
+      statusText: response.statusText,
+      data: response.data,
+      info: response.data?.info,
+    });
+
+    // Check if we have valid data
+    if (!response.data) {
+      throw new ApiError(response.status, "No data received from pricing API");
+    }
+
+    // Return the pricing info or default values
+    return {
+      day_rate: response.data.info?.day_rate || 0,
+      cleaning_fee: response.data.info?.cleaning_fee || 0,
+      total: response.data.info?.total || 0,
+    };
   } catch (err) {
-    console.error("Error fetching property pricing:", err);
-    return null;
+    console.error(`Pricing API Error for property ${id}:`, {
+      error: err,
+      message: err.message,
+      status: err.status,
+      data: err.data,
+    });
+
+    // If it's a network error or other non-API error
+    if (!(err instanceof ApiError)) {
+      throw new ApiError(500, "Failed to fetch property pricing");
+    }
+
+    throw err;
   }
 }
 

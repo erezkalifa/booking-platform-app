@@ -17,15 +17,21 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
   const [cities, setCities] = useState([]);
   const [showCitiesList, setShowCitiesList] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const dropdownRef = useRef(null);
+  const dropdownRefs = {
+    bedrooms: useRef(null),
+    guests: useRef(null),
+    price: useRef(null),
+  };
 
   useEffect(() => {
     loadCities();
 
-    // Close dropdown when clicking outside
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setActiveDropdown(null);
+      if (activeDropdown) {
+        const activeRef = dropdownRefs[activeDropdown];
+        if (activeRef && !activeRef.current?.contains(event.target)) {
+          setActiveDropdown(null);
+        }
       }
     };
 
@@ -56,7 +62,7 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log("Filter input changed:", { name, value });
+
     setLocalFilters((prev) => ({
       ...prev,
       [name]: value,
@@ -124,10 +130,12 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
   };
 
   const handleOptionSelect = (field, value) => {
-    setLocalFilters((prev) => ({
-      ...prev,
+    const newFilters = {
+      ...localFilters,
       [field]: value,
-    }));
+    };
+    setLocalFilters(newFilters);
+    onSetFilter(newFilters);
     setActiveDropdown(null);
   };
 
@@ -217,13 +225,15 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
     });
 
     return (
-      <div className="custom-dropdown" ref={dropdownRef}>
+      <div className="custom-dropdown" ref={dropdownRefs[type]}>
         <button
           type="button"
           className={`dropdown-button ${
             activeDropdown === type ? "active" : ""
           }`}
           onClick={() => handleDropdownClick(type)}
+          aria-label={`Select ${title.toLowerCase()}`}
+          aria-expanded={activeDropdown === type}
         >
           {icon}
           <div className="dropdown-button-content">
@@ -235,7 +245,7 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
         </button>
 
         {activeDropdown === type && (
-          <div className="dropdown-menu">
+          <div className="dropdown-menu" role="listbox">
             {options.map((option) => (
               <div
                 key={option.value}
@@ -251,16 +261,26 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
                 onClick={() => {
                   if (type === "price") {
                     const [min, max] = option.value.split("-");
-                    setLocalFilters((prev) => ({
-                      ...prev,
+                    const newFilters = {
+                      ...localFilters,
                       priceMin: min || "",
                       priceMax: max || "",
-                    }));
+                    };
+                    setLocalFilters(newFilters);
+                    onSetFilter(newFilters);
+                    setActiveDropdown(null); // Close dropdown after selection
                   } else {
                     handleOptionSelect(type, option.value);
                   }
-                  setActiveDropdown(null);
                 }}
+                role="option"
+                aria-selected={
+                  type === "price"
+                    ? `${localFilters.priceMin || ""}-${
+                        localFilters.priceMax || ""
+                      }` === option.value
+                    : localFilters[type] === option.value
+                }
               >
                 {option.label}
               </div>

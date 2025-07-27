@@ -22,126 +22,33 @@ function formatDate(date) {
 
 async function query(filterBy = {}) {
   try {
-    const searchTerm = filterBy.city?.trim().toLowerCase();
-
-    // Start with minimal params
-    const params = {
-      page: filterBy.page || 1,
-    };
-
-    // Add dates only if explicitly provided
-    if (filterBy.from) {
-      params.check_in = formatDate(new Date(filterBy.from));
-    }
-    if (filterBy.to) {
-      params.check_out = formatDate(new Date(filterBy.to));
-    }
-
-    // Add search term if provided
-    if (searchTerm) {
-      params.search = searchTerm;
-    }
-
-    // Add other filters only if they have values
-    if (filterBy.adults) params.adults = filterBy.adults;
-    if (filterBy.children) params.children = filterBy.children;
-    if (filterBy.bedrooms) params.beds = filterBy.bedrooms;
-    if (filterBy.bathrooms) params.baths = filterBy.bathrooms;
-    if (filterBy.region) params.region = filterBy.region;
-
-    console.log("Searching with params:", params);
-    const response = await api.get("/listings", { params });
-
-    // Log raw listings before filtering
-    console.log(
-      "Raw listings before filtering:",
-      response.data.listings.map((listing) => ({
-        id: listing.id,
-        title: listing.title,
-        city_name: listing.city_name,
-        nickname: listing.nickname,
-      }))
-    );
-
-    // If searching for a specific term, filter results more strictly
-    let filteredListings = response.data.listings;
-    if (searchTerm) {
-      filteredListings = response.data.listings.filter((listing) => {
-        const titleMatch = listing.title?.toLowerCase().includes(searchTerm);
-        const cityMatch = listing.city_name?.toLowerCase().includes(searchTerm);
-        const nicknameMatch = listing.nickname
-          ?.toLowerCase()
-          .includes(searchTerm);
-        return titleMatch || cityMatch || nicknameMatch;
-      });
-    }
-
-    // Log filtered results
-    console.log(
-      "Filtered listings:",
-      filteredListings.map((listing) => ({
-        id: listing.id,
-        title: listing.title,
-        city_name: listing.city_name,
-        nickname: listing.nickname,
-      }))
-    );
-
-    // Transform the data
-    const transformedData = filteredListings.map((listing) => {
-      const images = listing.pictures?.map((pic) => pic.picture) || [];
-
-      return {
-        id: listing.id,
-        title: listing.title || "Unnamed Property",
-        description:
-          listing.marketing_content?.description ||
-          listing.description ||
-          "No description available",
-        location: listing.city_name || listing.address?.city || "",
-        images: images,
-        pricing: {
-          basePrice: listing.days_rates
-            ? Object.values(listing.days_rates)[0] || 0
-            : 0,
-          currency: "USD",
-          total:
-            listing.total_price ||
-            (listing.days_rates
-              ? Object.values(listing.days_rates)[0] || 0
-              : 0),
-        },
-        bedrooms: parseInt(listing.beds) || 0,
-        bathrooms: parseInt(listing.baths) || 0,
-        maxGuests: parseInt(listing.accommodates) || 1,
-        amenities: listing.amenities || [],
-        type: listing.ota_type || "Property",
-        latitude: listing.lat,
-        longitude: listing.lng,
-        address: listing.address || {},
-      };
+    console.log("Fetching properties with filter:", filterBy);
+    const response = await api.get("/listings", {
+      params: {
+        page: 1,
+        search: filterBy.city,
+        beds: filterBy.bedrooms,
+        baths: filterBy.bathrooms,
+        check_in: filterBy.checkIn,
+        check_out: filterBy.checkOut,
+        guests_count: filterBy.guests,
+      },
     });
 
-    // Log final results
-    console.log("Final search results:", {
-      searchTerm,
-      totalFound: transformedData.length,
-      results: transformedData.map((item) => ({
-        id: item.id,
-        title: item.title,
-        location: item.location,
-      })),
-    });
+    console.log("Raw API Response:", response.data);
 
-    return transformedData;
-  } catch (error) {
-    console.error(
-      "Error fetching properties:",
-      error.response?.data || error.message
-    );
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch properties"
-    );
+    if (!response.data || !response.data.listings) {
+      console.error("Invalid API response structure:", response.data);
+      return [];
+    }
+
+    const properties = response.data.listings.map(transformPropertyData);
+    console.log("Transformed properties:", properties);
+
+    return properties;
+  } catch (err) {
+    console.error("Error fetching properties:", err);
+    throw err;
   }
 }
 
@@ -248,30 +155,52 @@ function getDefaultDates() {
 function transformPropertyData(apiProperty) {
   if (!apiProperty) return null;
 
+  // For debugging
+  console.log("Raw API Property:", apiProperty);
+
   // Transform the pictures array to get the required URLs
   const images =
-    apiProperty.pictures?.map((pic) => ({
-      id: pic.id || pic._id,
-      large: pic.large || pic.original,
-      regular: pic.regular || pic.original,
-      thumbnail: pic.thumbnail || pic.original,
-      caption: pic.caption || "",
-    })) || [];
+    apiProperty.pictures?.map((pic) => {
+      // For debugging
+      console.log("Processing picture:", pic);
+
+      return {
+        id: pic.id || pic._id || String(Math.random()),
+        large: pic.large || pic.original || pic.regular || pic.picture,
+        regular: pic.regular || pic.large || pic.original || pic.picture,
+        original: pic.original || pic.large || pic.regular || pic.picture,
+        thumbnail:
+          pic.thumbnail ||
+          pic.regular ||
+          pic.large ||
+          pic.original ||
+          pic.picture,
+        caption: pic.caption || "",
+      };
+    }) || [];
+
+  // For debugging
+  console.log("Transformed images:", images);
 
   return {
     id: apiProperty.id,
-    title: apiProperty.title || apiProperty.nickname,
+    title: apiProperty.title || apiProperty.nickname || "Unnamed Property",
     description:
-      apiProperty.marketing_content?.description || apiProperty.description,
-    location: apiProperty.city_name || apiProperty.address?.city,
+      apiProperty.marketing_content?.description ||
+      apiProperty.description ||
+      "No description available",
+    location:
+      apiProperty.city_name ||
+      apiProperty.address?.city ||
+      "Location not specified",
     images,
-    bedrooms: apiProperty.beds,
-    bathrooms: apiProperty.baths,
-    maxGuests: apiProperty.accommodates,
+    bedrooms: Number(apiProperty.beds) || 0,
+    bathrooms: Number(apiProperty.baths) || 0,
+    maxGuests: Number(apiProperty.accommodates) || 1,
     amenities: apiProperty.amenities || [],
-    type: apiProperty.ota_type,
+    type: apiProperty.ota_type || "Property",
     latitude: apiProperty.lat,
     longitude: apiProperty.lng,
-    address: apiProperty.address,
+    address: apiProperty.address || {},
   };
 }

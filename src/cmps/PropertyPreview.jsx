@@ -11,7 +11,7 @@ export function PropertyPreview({ property }) {
     title,
     description,
     location,
-    images,
+    images = [], // Provide default empty array
     bedrooms,
     bathrooms,
     maxGuests,
@@ -32,7 +32,7 @@ export function PropertyPreview({ property }) {
         checkIn,
         checkOut,
         2
-      ); // Default to 2 guests
+      );
       setPricing(pricingData);
     } catch (err) {
       console.error("Failed to load pricing:", err);
@@ -41,7 +41,11 @@ export function PropertyPreview({ property }) {
     }
   }
 
-  const mainImage = images[0] || `https://picsum.photos/800/600?random=${id}`;
+  // Get the first image URL safely
+  const getImageUrl = (image) => {
+    if (!image) return null;
+    return image.large || image.regular || image.original || image.thumbnail;
+  };
 
   // Format prices
   const formatter = new Intl.NumberFormat("en-US", {
@@ -57,7 +61,15 @@ export function PropertyPreview({ property }) {
   return (
     <Link to={`/property/${id}`} className="property-preview">
       <div className="property-preview-image">
-        <img src={mainImage} alt={title} loading="lazy" />
+        {images.length > 0 && getImageUrl(images[0]) ? (
+          <img
+            src={getImageUrl(images[0])}
+            alt={images[0].caption || title}
+            loading="lazy"
+          />
+        ) : (
+          <div className="no-image">No image available</div>
+        )}
         {type && <div className="property-type-badge">{type}</div>}
       </div>
 
@@ -140,11 +152,6 @@ export function PropertyPreview({ property }) {
               {pricing.cleaning_fee > 0 && (
                 <div className="cleaning-fee">
                   + {formatter.format(pricing.cleaning_fee)} cleaning fee
-                </div>
-              )}
-              {pricing.security_deposit > 0 && (
-                <div className="security-deposit">
-                  Security deposit: {formatter.format(pricing.security_deposit)}
                 </div>
               )}
             </>

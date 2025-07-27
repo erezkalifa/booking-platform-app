@@ -65,11 +65,26 @@ async function query(filterBy = {}) {
     // Filter by bedrooms
     if (filterBy.bedrooms) {
       const bedroomsCount = Number(filterBy.bedrooms);
+      console.log("Filtering by bedrooms:", {
+        filterValue: filterBy.bedrooms,
+        bedroomsCount,
+      });
       properties = properties.filter((property) => {
-        const propertyBedrooms = Number(property.bedrooms) || 0;
-        return bedroomsCount === 5
-          ? propertyBedrooms >= 5
-          : propertyBedrooms === bedroomsCount;
+        const propertyBeds = Number(property.beds) || 0;
+        console.log("Property bedrooms check:", {
+          propertyId: property.id,
+          propertyBeds,
+          bedroomsCount,
+          propertyData: property,
+        });
+        // If bedroomsCount is 5, it means "5+ Bedrooms" was selected
+        if (bedroomsCount === 5) {
+          console.log("Checking 5+ condition:", propertyBeds >= 5);
+          return propertyBeds >= 5;
+        }
+        // Otherwise, match exact number
+        console.log("Checking exact match:", propertyBeds === bedroomsCount);
+        return propertyBeds === bedroomsCount;
       });
     }
 

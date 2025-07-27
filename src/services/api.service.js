@@ -2,9 +2,14 @@ import axios from "axios";
 
 // API Configuration
 const BASE_URL = "/open_api/v1";
-const CLIENT_ID = "boom_a70ed11058d102023431";
-const CLIENT_SECRET =
-  "8fc601324e8c0e47a05e2c5f98f1a07b1d747e8ff12b51fc8da64b280182ba75";
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  throw new Error(
+    "Missing API credentials. Please check environment variables."
+  );
+}
 
 // Create axios instance with base configuration
 const api = axios.create({

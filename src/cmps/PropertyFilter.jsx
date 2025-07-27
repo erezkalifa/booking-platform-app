@@ -10,6 +10,8 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
     to: filterBy?.to ? new Date(filterBy.to) : null,
     priceMin: filterBy?.priceMin || "",
     priceMax: filterBy?.priceMax || "",
+    bedrooms: filterBy?.bedrooms || "",
+    guests: filterBy?.guests || "",
   });
 
   const [cities, setCities] = useState([]);
@@ -26,6 +28,8 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
       to: filterBy?.to ? new Date(filterBy.to) : null,
       priceMin: filterBy?.priceMin || "",
       priceMax: filterBy?.priceMax || "",
+      bedrooms: filterBy?.bedrooms || "",
+      guests: filterBy?.guests || "",
     });
   }, [filterBy]);
 
@@ -96,6 +100,8 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
       to: null,
       priceMin: "",
       priceMax: "",
+      bedrooms: "",
+      guests: "",
     };
     setLocalFilters(emptyFilters);
     onSetFilter(emptyFilters);
@@ -179,6 +185,45 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
             dateFormat="MMM d"
             isClearable
           />
+        </div>
+      </div>
+
+      {/* Rooms Filter */}
+      <div className="filter-segment">
+        <label className="filter-label">Bedrooms</label>
+        <div className="filter-control">
+          <select
+            name="bedrooms"
+            value={localFilters.bedrooms}
+            onChange={handleInputChange}
+          >
+            <option value="">Any</option>
+            <option value="1">1 Bedroom</option>
+            <option value="2">2 Bedrooms</option>
+            <option value="3">3 Bedrooms</option>
+            <option value="4">4 Bedrooms</option>
+            <option value="5">5+ Bedrooms</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Guests Filter */}
+      <div className="filter-segment">
+        <label className="filter-label">Guests</label>
+        <div className="filter-control">
+          <select
+            name="guests"
+            value={localFilters.guests}
+            onChange={handleInputChange}
+          >
+            <option value="">Any</option>
+            <option value="1">1 Guest</option>
+            <option value="2">2 Guests</option>
+            <option value="3">3 Guests</option>
+            <option value="4">4 Guests</option>
+            <option value="5">5 Guests</option>
+            <option value="6">6+ Guests</option>
+          </select>
         </div>
       </div>
 

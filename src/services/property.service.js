@@ -62,6 +62,28 @@ async function query(filterBy = {}) {
       });
     }
 
+    // Filter by bedrooms
+    if (filterBy.bedrooms) {
+      const bedroomsCount = Number(filterBy.bedrooms);
+      properties = properties.filter((property) => {
+        const propertyBedrooms = Number(property.beds) || 0;
+        return bedroomsCount === 5
+          ? propertyBedrooms >= 5
+          : propertyBedrooms === bedroomsCount;
+      });
+    }
+
+    // Filter by guests
+    if (filterBy.guests) {
+      const guestsCount = Number(filterBy.guests);
+      properties = properties.filter((property) => {
+        const propertyGuests = Number(property.accommodates) || 0;
+        return guestsCount === 6
+          ? propertyGuests >= 6
+          : propertyGuests === guestsCount;
+      });
+    }
+
     // Filter by price if price range is specified
     if (filterBy.priceMin || filterBy.priceMax) {
       // First get pricing info for all properties

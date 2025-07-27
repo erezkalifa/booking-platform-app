@@ -1,26 +1,21 @@
-/* Base styles */
 @import "./base.css";
-
-/* Layout styles */
 @import "./layout.css";
-
-/* Form styles */
+@import "./components.css";
 @import "./forms.css";
-
-/* Utility classes */
 @import "./utilities.css";
 
-/* Component styles */
-@import "./cmps/PropertyList.css";
-@import "./cmps/PropertyFilter.css";
-@import "./cmps/PropertyPreview.css";
-@import "./cmps/AvailabilityCalendar.css";
-@import "./cmps/Navbar.css";
-@import "./cmps/ImageModal.css";
-@import "./cmps/PhotoGallery.css";
-
-/* Page styles */
-@import "./pages/PropertyIndex.css";
-@import "./pages/PropertyDetails.css";
+/* Pages */
 @import "./pages/NotFound.css";
+@import "./pages/PropertyDetails.css";
 @import "./pages/PropertyEdit.css";
+@import "./pages/PropertyIndex.css";
+@import "./pages/WishlistPage.css";
+
+/* Components */
+@import "./cmps/Navbar.css";
+@import "./cmps/PropertyFilter.css";
+@import "./cmps/PropertyList.css";
+@import "./cmps/PropertyPreview.css";
+@import "./cmps/PhotoGallery.css";
+@import "./cmps/ImageModal.css";
+@import "./cmps/AvailabilityCalendar.css";

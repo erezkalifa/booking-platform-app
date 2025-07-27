@@ -9,17 +9,38 @@
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 80px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-@media (max-width: 1200px) {
+/* Large screens */
+@media (max-width: 1400px) {
   .main-layout {
+    max-width: 1300px;
     padding: 0 60px;
   }
 }
 
-@media (max-width: 768px) {
+/* Medium-large screens */
+@media (max-width: 1200px) {
   .main-layout {
-    padding: 0 24px;
+    max-width: 1100px;
+    padding: 0 40px;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1100px) {
+  .main-layout {
+    max-width: 900px;
+    padding: 0 32px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .main-layout {
+    padding: 0 20px;
   }
 }
 

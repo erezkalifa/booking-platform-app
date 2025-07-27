@@ -15,7 +15,7 @@
   position: relative;
   width: 100%;
   height: 0;
-  padding-bottom: 100%; /* Make it square for now */
+  padding-bottom: 100%;
   margin-bottom: 16px;
 }
 
@@ -94,6 +94,11 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .property-preview-price {
@@ -125,31 +130,33 @@
   margin-top: 0.5rem;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .property-preview-content {
-    padding: 1.25rem;
-  }
-
-  .property-preview-title {
-    font-size: 1.1rem;
-  }
-
-  .property-preview-price .price {
-    font-size: 1.25rem;
+/* Responsive adjustments */
+@media (max-width: 1399px) {
+  .property-preview-image {
+    padding-bottom: 95%;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .property-preview-image {
-    padding-top: 56.25%; /* 16:9 aspect ratio */
+    padding-bottom: 90%;
   }
 
-  .property-preview-content {
-    padding: 1rem;
+  .property-preview-details h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .property-preview-image {
+    padding-bottom: 75%;
   }
 
-  .amenity-tag {
-    font-size: 0.8rem;
+  .property-preview-details {
+    padding: 0;
+  }
+
+  .property-preview-details h3 {
+    font-size: 1.1rem;
   }
 }

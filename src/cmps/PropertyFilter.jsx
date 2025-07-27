@@ -17,6 +17,7 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
   const [cities, setCities] = useState([]);
   const [showCitiesList, setShowCitiesList] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRefs = {
     bedrooms: useRef(null),
     guests: useRef(null),
@@ -24,8 +25,6 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
   };
 
   useEffect(() => {
-    loadCities();
-
     const handleClickOutside = (event) => {
       if (activeDropdown) {
         const activeRef = dropdownRefs[activeDropdown];
@@ -37,47 +36,27 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [activeDropdown]);
 
   useEffect(() => {
-    setLocalFilters({
-      city: filterBy?.city || "",
-      from: filterBy?.from ? new Date(filterBy.from) : null,
-      to: filterBy?.to ? new Date(filterBy.to) : null,
-      priceMin: filterBy?.priceMin || "",
-      priceMax: filterBy?.priceMax || "",
-      bedrooms: filterBy?.bedrooms || "",
-      guests: filterBy?.guests || "",
-    });
-  }, [filterBy]);
+    loadCities();
+  }, []);
 
   const loadCities = async () => {
     try {
-      const citiesData = await propertyService.getCities();
-      setCities(citiesData);
+      const cities = await propertyService.getCities();
+      setCities(cities);
     } catch (err) {
-      console.error("Error loading cities:", err);
+      console.error("Failed to load cities:", err);
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
+  const handleInputChange = (ev) => {
+    const { name, value } = ev.target;
     setLocalFilters((prev) => ({
       ...prev,
       [name]: value,
     }));
-    if (name === "city") {
-      setShowCitiesList(true);
-    }
-  };
-
-  const handleCitySelect = (city) => {
-    setLocalFilters((prev) => ({
-      ...prev,
-      city,
-    }));
-    setShowCitiesList(false);
   };
 
   const handleDateChange = (dates) => {
@@ -89,29 +68,21 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
     }));
   };
 
-  const handlePriceChange = (e) => {
-    const { name, value } = e.target;
-    const price = Math.max(0, Number(value));
+  const handleCitySelect = (city) => {
     setLocalFilters((prev) => ({
       ...prev,
-      [name]: price || "",
+      city,
     }));
+    setShowCitiesList(false);
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const formattedFilters = {
-      ...localFilters,
-      from: localFilters.from?.toISOString().split("T")[0] || "",
-      to: localFilters.to?.toISOString().split("T")[0] || "",
-      city: localFilters.city.trim(),
-    };
-
-    onSetFilter(formattedFilters);
+  const handleSearch = (ev) => {
+    ev.preventDefault();
+    onSetFilter(localFilters);
+    setIsModalOpen(false);
   };
 
-  const handleReset = (e) => {
-    e.preventDefault();
+  const handleReset = () => {
     const emptyFilters = {
       city: "",
       from: null,
@@ -123,20 +94,13 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
     };
     setLocalFilters(emptyFilters);
     onSetFilter(emptyFilters);
+    setIsModalOpen(false);
   };
 
-  const handleDropdownClick = (dropdownName) => {
-    setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
-  };
-
-  const handleOptionSelect = (field, value) => {
-    const newFilters = {
-      ...localFilters,
-      [field]: value,
-    };
-    setLocalFilters(newFilters);
-    onSetFilter(newFilters);
-    setActiveDropdown(null);
+  const hasActiveFilters = () => {
+    return Object.values(localFilters).some(
+      (value) => value !== "" && value !== null
+    );
   };
 
   const renderCustomDropdown = (type) => {
@@ -291,14 +255,22 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
     );
   };
 
-  const hasActiveFilters = () => {
-    return Object.values(localFilters).some(
-      (value) => value !== "" && value !== null
-    );
+  const handleDropdownClick = (dropdownName) => {
+    setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
   };
 
-  return (
-    <form className="filter-bar" onSubmit={handleSearch}>
+  const handleOptionSelect = (field, value) => {
+    const newFilters = {
+      ...localFilters,
+      [field]: value,
+    };
+    setLocalFilters(newFilters);
+    onSetFilter(newFilters);
+    setActiveDropdown(null);
+  };
+
+  const FilterContent = () => (
+    <>
       {/* Location Filter */}
       <div className="filter-segment">
         <div className="filter-control">
@@ -393,7 +365,7 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
 
         {/* Reset Button */}
         {hasActiveFilters() && (
-          <button onClick={handleReset} className="filter-action">
+          <button onClick={handleReset} className="filter-action" type="button">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -407,6 +379,65 @@ export function PropertyFilter({ filterBy, onSetFilter, isFiltering }) {
           </button>
         )}
       </div>
-    </form>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Filter */}
+      <form className="filter-bar desktop-filter" onSubmit={handleSearch}>
+        <FilterContent />
+      </form>
+
+      {/* Mobile Filter Button & Modal */}
+      <div className="mobile-filter">
+        <button
+          className="mobile-filter-button"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            style={{ width: 20, height: 20, marginRight: 8 }}
+          >
+            <path d="M3 4h18M3 12h18M3 20h18" />
+          </svg>
+          Filters
+          {hasActiveFilters() && <span className="filter-badge" />}
+        </button>
+
+        {isModalOpen && (
+          <div
+            className="filter-modal-overlay"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <div className="filter-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="filter-modal-header">
+                <h2>Filters</h2>
+                <button
+                  className="close-modal"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    style={{ width: 24, height: 24 }}
+                  >
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <form onSubmit={handleSearch}>
+                <FilterContent />
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

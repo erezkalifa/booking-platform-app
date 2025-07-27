@@ -372,3 +372,155 @@
     padding: 10px 16px;
   }
 }
+
+/* Desktop Filter */
+.desktop-filter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 16px 0;
+}
+
+/* Mobile Filter */
+.mobile-filter {
+  display: none;
+}
+
+.mobile-filter-button {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-filter-button:hover {
+  background: #f8f9fa;
+  border-color: #ccc;
+}
+
+.filter-badge {
+  width: 8px;
+  height: 8px;
+  background: #ff385c;
+  border-radius: 50%;
+  margin-left: 8px;
+}
+
+/* Filter Modal */
+.filter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.filter-modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+.filter-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.filter-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #666;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-modal:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.filter-modal form {
+  padding: 20px;
+}
+
+.filter-modal .filter-segment {
+  margin-bottom: 24px;
+  max-width: none;
+}
+
+.filter-modal .filter-actions {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+}
+
+.filter-modal .filter-action {
+  flex: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1300px) {
+  .desktop-filter {
+    display: none;
+  }
+
+  .mobile-filter {
+    display: block;
+    margin: 16px 0;
+  }
+}

@@ -56,13 +56,19 @@
 
 /* Error State */
 .error-container {
+  position: fixed;
+  bottom: 2vh; /* Use viewport height */
+  right: 2vw; /* Use viewport width */
+  z-index: 9999;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 90vw; /* Ensure it doesn't overflow on mobile */
 }
 
 .error-content {
+  pointer-events: auto;
   text-align: center;
   color: var(--error-color);
 }
@@ -101,4 +107,109 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Error Toast Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+.error-toast {
+  pointer-events: auto;
+  background-color: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 300px;
+  max-width: 400px;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #fee2e2;
+  transform-origin: bottom right;
+}
+
+.error-toast.hide {
+  animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.error-toast-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #fee2e2;
+}
+
+.error-toast-type {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.error-toast-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.error-toast-icon {
+  flex-shrink: 0;
+  color: #991b1b;
+  margin-top: 2px;
+}
+
+.error-toast-message {
+  color: #1f2937;
+  font-size: 14px;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.error-toast-close {
+  margin-left: auto;
+  padding: 6px 12px;
+  background-color: #991b1b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.error-toast-close:hover {
+  background-color: #7f1d1d;
+  transform: scale(1.05);
+}
+
+/* Ensure the container stays above everything */
+#root {
+  position: relative;
 }

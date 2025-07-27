@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { propertyService } from "../services/property.service";
+import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service";
 
 export function PropertyEdit() {
   const [property, setProperty] = useState({
@@ -24,7 +25,8 @@ export function PropertyEdit() {
         setProperty(property);
       }
     } catch (err) {
-      console.error("Failed to load property:", err);
+      showErrorMsg("Failed to load property details");
+      navigate("/property");
     }
   }
 
@@ -40,9 +42,10 @@ export function PropertyEdit() {
     ev.preventDefault();
     try {
       await propertyService.save(property);
+      showSuccessMsg("Property saved successfully!");
       navigate("/property");
     } catch (err) {
-      console.error("Failed to save property:", err);
+      showErrorMsg("Failed to save property");
     }
   }
 

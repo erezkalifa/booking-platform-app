@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { propertyService } from "../services/property.service";
 import { ImageModal } from "../cmps/ImageModal";
 import { PhotoGallery } from "../cmps/PhotoGallery";
+import { showErrorMsg } from "../services/event-bus.service";
 
 export function PropertyDetails() {
   const { id } = useParams();
@@ -47,6 +48,7 @@ export function PropertyDetails() {
         err.message ||
           "Failed to load property details. Please try again later."
       );
+      showErrorMsg("Failed to load property details");
     } finally {
       setIsLoading(false);
     }
@@ -65,12 +67,13 @@ export function PropertyDetails() {
       setPricing(pricingData);
     } catch (err) {
       console.error("Error loading pricing:", err);
+      showErrorMsg("Failed to load pricing information");
     } finally {
       setIsPriceLoading(false);
     }
   }
 
-  if (isLoading) {
+  if (isLoading || isPriceLoading) {
     return (
       <div className="loader-container">
         <div className="loader"></div>

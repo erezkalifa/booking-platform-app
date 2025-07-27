@@ -4,6 +4,7 @@ import { PropertyDetails } from "./pages/PropertyDetails";
 import { PropertyEdit } from "./pages/PropertyEdit";
 import { NotFound } from "./pages/NotFound";
 import { Navbar } from "./cmps/Navbar";
+import { UserMsg } from "./cmps/UserMsg";
 
 export function App() {
   return (
@@ -18,6 +19,7 @@ export function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+      <UserMsg />
     </div>
   );
 }
